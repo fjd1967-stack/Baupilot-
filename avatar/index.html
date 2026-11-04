@@ -63,9 +63,6 @@
 
 <script type="module">
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { KTX2Loader } from 'three/addons/loaders/KTX2Loader.js';
-import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 const $ = id => document.getElementById(id);
@@ -96,47 +93,79 @@ function resize() {
 }
 addEventListener('resize', resize); resize();
 
-let face = null, head = null;
-const ktx2 = new KTX2Loader()
-  .setTranscoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/basis/')
-  .detectSupport(renderer);
-new GLTFLoader().setKTX2Loader(ktx2).setMeshoptDecoder(MeshoptDecoder)
-  .load('https://cdn.jsdelivr.net/gh/mrdoob/three.js@r160/examples/models/gltf/facecap.glb', gltf => {
-    head = gltf.scene;
-    scene.add(head);
-    head.traverse(o => { if (o.isMesh && o.morphTargetDictionary && o.morphTargetDictionary.jawOpen !== undefined) face = o; });
-    const box = new THREE.Box3().setFromObject(head);
-    const size = box.getSize(new THREE.Vector3()), c = box.getCenter(new THREE.Vector3());
-    head.position.sub(c);
-    const dist = (Math.max(size.y, size.x) / 2) / Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * 1.25;
-    camera.position.set(0, 0, dist);
-    setStatus(face ? 'Bereit. Tippe auf das Mikrofon.' : 'Avatar geladen, aber ohne Gesichtsbewegung.');
-  }, undefined, e => setStatus('Avatar konnte nicht geladen werden: ' + (e.message || e)));
+// Selbstgebauter Avatar (keine Modelldatei nötig): Kopf, lange Haare, Augen, Mund
+const M = (color, rough = 0.6) => new THREE.MeshStandardMaterial({ color, roughness: rough, metalness: 0 });
+const ell = (r, sx, sy, sz, mat, x = 0, y = 0, z = 0, parent) => {
+  const m = new THREE.Mesh(new THREE.SphereGeometry(r, 48, 32), mat);
+  m.scale.set(sx, sy, sz); m.position.set(x, y, z); (parent || avatar).add(m); return m;
+};
+const avatar = new THREE.Group(); scene.add(avatar);
+const skin = M(0xf0c4a4, 0.55), skinDark = M(0xe2ad8c, 0.6);
+const hairM = M(0x4a2a16, 0.45), cloth = M(0x2f4f7f, 0.8);
+const headG = new THREE.Group(); avatar.add(headG);
+const hairG = new THREE.Group(); avatar.add(hairG);
 
-const morph = (name, v) => { if (!face) return; const i = face.morphTargetDictionary[name]; if (i !== undefined) face.morphTargetInfluences[i] = v; };
+// Körper
+ell(1, 1.55, 0.6, 0.85, cloth, 0, -2.15, 0);
+const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.34, 0.9, 32), skin); neck.position.set(0, -1.2, 0); avatar.add(neck);
+// Haare hinten (lang) und Seiten
+ell(1, 1.12, 2.1, 0.7, hairM, 0, -1.0, -0.45, hairG);
+ell(1, 1.02, 1.2, 1.0, hairM, 0, 0.05, -0.2, hairG);
+ell(1, 0.2, 1.55, 0.4, hairM, -0.92, -0.75, 0.1, hairG);
+ell(1, 0.2, 1.55, 0.4, hairM, 0.92, -0.75, 0.1, hairG);
+// Kopf
+ell(1, 0.88, 1.05, 0.92, skin, 0, 0, 0, headG);
+// Haaransatz oben (Kappe + Scheitel-Strähnen)
+const cap = new THREE.Mesh(new THREE.SphereGeometry(1, 48, 32, 0, Math.PI * 2, 0, 1.05), hairM);
+cap.scale.set(0.93, 1.1, 0.97); cap.position.set(0, 0.02, -0.02); headG.add(cap);
+ell(1, 0.5, 0.5, 0.3, hairM, -0.5, 0.78, 0.72, headG);
+ell(1, 0.5, 0.5, 0.3, hairM, 0.45, 0.8, 0.7, headG);
+// Nase, Wangen
+ell(0.12, 1, 1.2, 0.8, skinDark, 0, -0.1, 0.9, headG);
+// Augen
+const eyes = [];
+for (const sx of [-1, 1]) {
+  const x = sx * 0.33;
+  ell(0.14, 1, 0.8, 0.6, M(0xffffff, 0.3), x, 0.14, 0.8, headG);
+  ell(0.075, 1, 1, 0.6, M(0x3b6ea5, 0.3), x, 0.14, 0.87, headG);
+  ell(0.035, 1, 1, 0.6, M(0x050505, 0.2), x, 0.14, 0.9, headG);
+  const lid = ell(0.15, 1, 1, 0.7, skin, x, 0.14, 0.8, headG); lid.scale.y = 0.001; eyes.push(lid);
+  const brow = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.05, 0.05), hairM);
+  brow.position.set(x, 0.4, 0.82); brow.rotation.z = -sx * 0.12; headG.add(brow);
+}
+// Mund: dunkle Öffnung + Ober-/Unterlippe
+const mouthY = -0.46;
+const openM = ell(0.2, 1, 0.05, 0.25, M(0x5a1f25, 0.7), 0, mouthY, 0.82, headG);
+const lipM = M(0xc4605f, 0.45);
+const upper = ell(0.2, 1, 0.2, 0.35, lipM, 0, mouthY + 0.02, 0.83, headG);
+const lower = ell(0.19, 1, 0.24, 0.35, lipM, 0, mouthY - 0.03, 0.83, headG);
+
+camera.position.set(0, -0.35, 8.6); camera.lookAt(0, -0.55, 0);
+const dl = new THREE.DirectionalLight(0xffffff, 1.4); dl.position.set(2, 3, 5); scene.add(dl);
+setStatus('Bereit. Tippe auf das Mikrofon.');
+
 let speaking = false, nextBlink = 2, blink = 0, t0 = performance.now();
 let mouth = 0; // 0..1, vom Sprechen getrieben
-const smooth = { jaw: 0, funnel: 0, smile: 0 };
+const smooth = { jaw: 0, smile: 0 };
 
 function frame(now) {
   requestAnimationFrame(frame);
   const t = (now - t0) / 1000;
-  if (head) {
-    head.rotation.y = Math.sin(t * 0.5) * 0.08;
-    head.rotation.x = Math.sin(t * 0.37) * 0.03;
-  }
+  headG.rotation.y = Math.sin(t * 0.5) * 0.1;
+  headG.rotation.x = Math.sin(t * 0.37) * 0.03;
+  hairG.rotation.y = headG.rotation.y * 0.6;
+  avatar.position.y = Math.sin(t * 1.1) * 0.015;
   // Lippenbewegung: Silben-ähnlicher Rhythmus, solange gesprochen wird
   const target = speaking ? Math.max(0, Math.sin(t * 13) * 0.5 + Math.sin(t * 7.3) * 0.3 + 0.25) * mouth : 0;
   smooth.jaw += (target - smooth.jaw) * 0.35;
-  smooth.funnel += ((speaking ? Math.max(0, Math.sin(t * 6.1)) * 0.35 : 0) - smooth.funnel) * 0.25;
-  smooth.smile += ((speaking ? 0.12 : 0.18) - smooth.smile) * 0.1;
-  morph('jawOpen', smooth.jaw * 0.55);
-  morph('mouthFunnel', smooth.funnel);
-  morph('mouthSmile_L', smooth.smile); morph('mouthSmile_R', smooth.smile);
+  const open = smooth.jaw;
+  openM.scale.y = 0.04 + open * 0.2;
+  upper.position.y = mouthY + 0.02 + open * 0.06;
+  lower.position.y = mouthY - 0.03 - open * 0.14;
   // Blinzeln
   if (t > nextBlink) { blink = 1; nextBlink = t + 2 + Math.random() * 3; }
   blink = Math.max(0, blink - 0.12);
-  morph('eyeBlink_L', blink); morph('eyeBlink_R', blink);
+  for (const l of eyes) l.scale.y = 0.001 + blink;
   renderer.render(scene, camera);
 }
 requestAnimationFrame(frame);
