@@ -1,1 +1,0 @@
-# Avatar-Assistentin (Arbeitsstand)

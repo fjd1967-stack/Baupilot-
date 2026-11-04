@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Avatar-Assistentin</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #14161a; color: #eee; font-family: -apple-system, system-ui, sans-serif; overflow: hidden; }
+  #avatar { position: fixed; inset: 0 0 190px 0; }
+  #status { position: fixed; top: calc(8px + env(safe-area-inset-top)); left: 0; right: 0; text-align: center; font-size: 13px; color: #bbb; z-index: 5; padding: 0 10px; text-shadow: 0 1px 3px #000; }
+  #ui { position: fixed; left: 0; right: 0; bottom: 0; height: 190px; padding: 10px 14px calc(10px + env(safe-area-inset-bottom)); background: #1d2026; border-top: 1px solid #2c313a; display: flex; flex-direction: column; gap: 8px; z-index: 5; }
+  #log { flex: 1; overflow-y: auto; font-size: 15px; line-height: 1.35; }
+  .u { color: #9ecbff; margin: 2px 0; } .a { color: #eee; margin: 2px 0; } .s { color: #999; font-size: 13px; margin: 2px 0; }
+  #row { display: flex; gap: 8px; }
+  #in { flex: 1; min-width: 0; font-size: 16px; padding: 10px; border-radius: 10px; border: 1px solid #3a404b; background: #14161a; color: #eee; }
+  button { font-size: 16px; border: 0; border-radius: 10px; padding: 10px 14px; background: #2f6feb; color: #fff; }
+  button.on { background: #d33; }
+  button.sec { background: #3a404b; }
+  dialog { background: #1d2026; color: #eee; border: 1px solid #3a404b; border-radius: 12px; max-width: 460px; width: 92%; }
+  dialog input, dialog textarea { width: 100%; font-size: 16px; padding: 8px; margin: 4px 0 10px; border-radius: 8px; border: 1px solid #3a404b; background: #14161a; color: #eee; }
+  dialog small { color: #999; display: block; margin: -6px 0 10px; }
+</style>
+</head>
+<body>
+<div id="avatar"></div>
+<div id="status">Lade Avatar …</div>
+<div id="ui">
+  <div id="log"></div>
+  <div id="row">
+    <button id="mic">🎤</button>
+    <input id="in" placeholder="Oder hier tippen …" autocomplete="off">
+    <button id="send">Senden</button>
+    <button class="sec" id="cfg">⚙︎</button>
+  </div>
+</div>
+
+<dialog id="dlg">
+  <form method="dialog">
+    <h3 style="margin-top:0">Einstellungen</h3>
+    <label>Anthropic-API-Schlüssel</label>
+    <input id="key" type="password" placeholder="sk-ant-…" autocomplete="off">
+    <small>Bleibt nur in diesem Browser.</small>
+    <label>ElevenLabs-API-Schlüssel (menschliche Stimme)</label>
+    <input id="xikey" type="password" placeholder="sk_…" autocomplete="off">
+    <small>Ohne Schlüssel spricht der Avatar mit der Handy-Stimme, ohne Lippenbewegung.</small>
+    <label>ElevenLabs-Stimmen-ID</label>
+    <input id="voiceid" placeholder="21m00Tcm4TlvDq8ikWAM">
+    <small>Standard ist „Rachel". Eine deutsche Stimme findest du in der ElevenLabs-Voice-Library.</small>
+    <label>Claude-Modell</label>
+    <input id="model">
+    <label>Anweisung an den Avatar</label>
+    <textarea id="sys" rows="4"></textarea>
+    <label><input type="checkbox" id="auto" style="width:auto"> Nach der Antwort automatisch weiter zuhören</label>
+    <br><br>
+    <button value="ok">Speichern</button>
+  </form>
+</dialog>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/",
+  "talkinghead": "https://cdn.jsdelivr.net/gh/met4citizen/TalkingHead@1.7/modules/talkinghead.mjs"
+} }
+</script>
+
+<script type="module">
+const $ = id => document.getElementById(id);
+const store = {
+  get: (k, d = '') => { try { return localStorage.getItem('av_' + k) ?? d; } catch { return d; } },
+  set: (k, v) => { try { localStorage.setItem('av_' + k, v); } catch {} }
+};
+const DEFAULT_SYS = 'Du bist eine freundliche, sprechende Assistentin. Antworte auf Deutsch in kurzen, natürlich gesprochenen Sätzen ohne Listen, ohne Markdown, ohne Emojis und ohne Sonderzeichen.';
+const setStatus = t => $('status').textContent = t;
+const log = $('log');
+const add = (cls, t) => { const d = document.createElement('div'); d.className = cls; d.textContent = t; log.appendChild(d); log.scrollTop = log.scrollHeight; return d; };
+
+// ---------- Avatar (TalkingHead, fotorealistisches Modell) ----------
+let head = null;
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+try {
+  const { TalkingHead } = await import('talkinghead');
+  head = new TalkingHead($('avatar'), {
+    lipsyncModules: ['en'],
+    cameraView: 'head',
+    cameraRotateEnable: false,
+    cameraZoomEnable: false,
+    cameraPanEnable: false,
+    modelFPS: 30
+  });
+  await head.showAvatar({
+    url: 'https://cdn.jsdelivr.net/gh/met4citizen/TalkingHead@1.7/avatars/brunette.glb',
+    body: 'F',
+    avatarMood: 'neutral',
+    lipsyncLang: 'en'
+  }, ev => { if (ev && ev.lengthComputable) setStatus('Lade Avatar … ' + Math.round(ev.loaded / ev.total * 100) + ' %'); });
+  setStatus('Bereit. Tippe auf das Mikrofon.');
+} catch (e) {
+  console.error(e);
+  setStatus('Avatar konnte nicht geladen werden: ' + (e.message || e));
+}
+
+// ---------- Stimme ----------
+let speaking = false;
+
+function browserSpeak(text) {
+  return new Promise(res => {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'de-DE';
+    const vs = speechSynthesis.getVoices().filter(v => v.lang.startsWith('de'));
+    const v = vs.find(x => /premium|enhanced|anna|petra|marlene|katja/i.test(x.name)) || vs[0];
+    if (v) u.voice = v;
+    u.onend = u.onerror = () => res();
+    speechSynthesis.speak(u);
+  });
+}
+
+// ElevenLabs: Audio + Zeitstempel je Zeichen -> Wörter für die Lippenbewegung
+async function elevenSpeak(text) {
+  const key = store.get('xikey');
+  const vid = store.get('voiceid') || '21m00Tcm4TlvDq8ikWAM';
+  const r = await fetch('https://api.elevenlabs.io/v1/text-to-speech/' + encodeURIComponent(vid) + '/with-timestamps?output_format=mp3_44100_128', {
+    method: 'POST',
+    headers: { 'xi-api-key': key, 'content-type': 'application/json' },
+    body: JSON.stringify({ text, model_id: 'eleven_multilingual_v2' })
+  });
+  if (!r.ok) { let m = r.status; try { m = (await r.json()).detail?.message || m; } catch {} throw new Error('ElevenLabs: ' + m); }
+  const j = await r.json();
+  const bin = atob(j.audio_base64); const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  await audioCtx.resume();
+  const audio = await audioCtx.decodeAudioData(bytes.buffer);
+  const ch = j.alignment.characters, st = j.alignment.character_start_times_seconds, en = j.alignment.character_end_times_seconds;
+  const words = [], wtimes = [], wdurations = [];
+  let cur = '', s0 = 0, e0 = 0;
+  for (let i = 0; i < ch.length; i++) {
+    if (/\s/.test(ch[i])) { if (cur) { words.push(cur); wtimes.push(s0 * 1000); wdurations.push((e0 - s0) * 1000); cur = ''; } }
+    else { if (!cur) s0 = st[i]; cur += ch[i]; e0 = en[i]; }
+  }
+  if (cur) { words.push(cur); wtimes.push(s0 * 1000); wdurations.push((e0 - s0) * 1000); }
+  head.speakAudio({ audio, words, wtimes, wdurations });
+  await new Promise(res => setTimeout(res, audio.duration * 1000 + 400));
+}
+
+async function speak(text) {
+  speaking = true; setStatus('Spricht …');
+  try {
+    if (head && store.get('xikey')) await elevenSpeak(text);
+    else await browserSpeak(text);
+  } catch (e) {
+    add('s', String(e.message || e));
+    await browserSpeak(text);
+  }
+  speaking = false;
+}
+
+// ---------- Mikrofon ----------
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec = null, listening = false, busy = false;
+function startListening() {
+  if (!SR) { setStatus('Spracherkennung fehlt. Nutze Safari oder Chrome.'); return; }
+  if (busy || listening || speaking) return;
+  speechSynthesis.cancel();
+  rec = new SR(); rec.lang = 'de-DE'; rec.interimResults = true; rec.continuous = false;
+  let finalText = '';
+  rec.onstart = () => { listening = true; $('mic').classList.add('on'); setStatus('Ich höre zu …'); };
+  rec.onresult = e => { let t = ''; for (const r of e.results) t += r[0].transcript; finalText = t; setStatus(t || 'Ich höre zu …'); };
+  rec.onerror = e => {
+    listening = false; $('mic').classList.remove('on'); finalText = '';
+    if (e.error === 'not-allowed') setStatus('Mikrofon blockiert. Bitte in Safari erlauben (Einstellungen der Webseite).');
+    else if (e.error !== 'no-speech' && e.error !== 'aborted') setStatus('Fehler: ' + e.error);
+  };
+  rec.onend = () => {
+    listening = false; $('mic').classList.remove('on');
+    const t = finalText.trim();
+    if (t) send(t); else if (!busy) setStatus('Nichts gehört. Tippe auf das Mikrofon.');
+  };
+  try { rec.start(); } catch {}
+}
+$('mic').onclick = () => listening ? rec.stop() : startListening();
+
+// ---------- Claude ----------
+const history = [];
+async function send(text) {
+  const key = store.get('key');
+  if (!key) { $('dlg').showModal(); setStatus('Bitte zuerst den Claude-Schlüssel eintragen.'); return; }
+  busy = true;
+  add('u', text); history.push({ role: 'user', content: text });
+  const bubble = add('a', '…'); setStatus('Denkt nach …');
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({ model: store.get('model', 'claude-sonnet-5-5'), max_tokens: 1024, system: store.get('sys', DEFAULT_SYS), messages: history.slice(-30) })
+    });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error?.message || r.status);
+    const reply = j.content.filter(b => b.type === 'text').map(b => b.text).join('\n').trim();
+    history.push({ role: 'assistant', content: reply });
+    bubble.textContent = reply; log.scrollTop = log.scrollHeight;
+    busy = false;
+    await speak(reply);
+    setStatus('Bereit.');
+    if ($('auto').checked) startListening();
+  } catch (e) {
+    busy = false; history.pop();
+    bubble.textContent = 'Fehler: ' + e.message; bubble.className = 's';
+    setStatus('Fehler bei der Anfrage.');
+  }
+}
+const submit = () => { const t = $('in').value.trim(); if (t && !busy) { $('in').value = ''; send(t); } };
+$('send').onclick = submit;
+$('in').onkeydown = e => { if (e.key === 'Enter') submit(); };
+
+// ---------- Einstellungen ----------
+const load = () => {
+  $('key').value = store.get('key'); $('xikey').value = store.get('xikey'); $('voiceid').value = store.get('voiceid');
+  $('model').value = store.get('model', 'claude-sonnet-5-5'); $('sys').value = store.get('sys', DEFAULT_SYS);
+  $('auto').checked = store.get('auto', '1') === '1';
+};
+load();
+$('cfg').onclick = () => { load(); $('dlg').showModal(); };
+$('dlg').addEventListener('close', () => {
+  store.set('key', $('key').value.trim()); store.set('xikey', $('xikey').value.trim()); store.set('voiceid', $('voiceid').value.trim());
+  store.set('model', $('model').value.trim()); store.set('sys', $('sys').value); store.set('auto', $('auto').checked ? '1' : '0');
+});
+add('s', 'Tippe auf das Mikrofon und sprich. Beim ersten Mal die Schlüssel unter ⚙︎ eintragen.');
+if (!store.get('key')) setTimeout(() => $('dlg').showModal(), 800);
+</script>
+</body>
+</html>
