@@ -40,10 +40,10 @@
   <form method="dialog">
     <h3 style="margin-top:0">Einstellungen</h3>
     <label>Anthropic-API-Schlüssel</label>
-    <input id="key" type="password" placeholder="sk-ant-…" autocomplete="off">
+    <input id="key" type="text" placeholder="sk-ant-…" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
     <small>Bleibt nur in diesem Browser.</small>
     <label>ElevenLabs-API-Schlüssel (menschliche Stimme)</label>
-    <input id="xikey" type="password" placeholder="sk_…" autocomplete="off">
+    <input id="xikey" type="text" placeholder="sk_…" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
     <small>Ohne Schlüssel spricht der Avatar mit der Handy-Stimme, ohne Lippenbewegung.</small>
     <label>ElevenLabs-Stimmen-ID</label>
     <input id="voiceid" placeholder="21m00Tcm4TlvDq8ikWAM">
@@ -183,10 +183,12 @@ function startListening() {
 $('mic').onclick = () => listening ? rec.stop() : startListening();
 
 // ---------- Claude ----------
+const cleanKey = v => v.replace(/[\s"'“”„]+/g, '');
 const history = [];
 async function send(text) {
   const key = store.get('key');
   if (!key) { $('dlg').showModal(); setStatus('Bitte zuerst den Claude-Schlüssel eintragen.'); return; }
+  if (!key.startsWith('sk-ant-')) { $('dlg').showModal(); setStatus('Das ist kein Anthropic-Schlüssel. Er beginnt mit sk-ant-'); add('s', 'Der Schlüssel muss mit sk-ant- beginnen. Erstelle ihn unter console.anthropic.com bei API Keys.'); return; }
   busy = true;
   add('u', text); history.push({ role: 'user', content: text });
   const bubble = add('a', '…'); setStatus('Denkt nach …');
@@ -197,6 +199,8 @@ async function send(text) {
       body: JSON.stringify({ model: store.get('model', 'claude-sonnet-5-5'), max_tokens: 1024, system: store.get('sys', DEFAULT_SYS), messages: history.slice(-30) })
     });
     const j = await r.json();
+    if (r.status === 401) { busy = false; history.pop(); bubble.textContent = 'Anthropic lehnt den Schlüssel ab. Bitte einen neuen Schlüssel erstellen und unter ⚙︎ einfügen.'; bubble.className = 's'; setStatus('Schlüssel ungültig.'); $('dlg').showModal(); return; }
+    if (r.status === 400 && /credit/i.test(j.error?.message || '')) { throw new Error('Kein Guthaben bei Anthropic. Bitte unter Billing aufladen.'); }
     if (!r.ok) throw new Error(j.error?.message || r.status);
     const reply = j.content.filter(b => b.type === 'text').map(b => b.text).join('\n').trim();
     history.push({ role: 'assistant', content: reply });
@@ -224,7 +228,7 @@ const load = () => {
 load();
 $('cfg').onclick = () => { load(); $('dlg').showModal(); };
 $('dlg').addEventListener('close', () => {
-  store.set('key', $('key').value.trim()); store.set('xikey', $('xikey').value.trim()); store.set('voiceid', $('voiceid').value.trim());
+  store.set('key', cleanKey($('key').value)); store.set('xikey', cleanKey($('xikey').value)); store.set('voiceid', $('voiceid').value.trim());
   store.set('model', $('model').value.trim()); store.set('sys', $('sys').value); store.set('auto', $('auto').checked ? '1' : '0');
 });
 add('s', 'Tippe auf das Mikrofon und sprich. Beim ersten Mal die Schlüssel unter ⚙︎ eintragen.');
