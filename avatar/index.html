@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Avatar-Assistentin</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #14161a; color: #eee; font-family: -apple-system, system-ui, sans-serif; }
+  #stage { position: fixed; inset: 0 0 210px 0; }
+  canvas { display: block; width: 100%; height: 100%; }
+  #ui { position: fixed; left: 0; right: 0; bottom: 0; height: 210px; padding: 10px 14px calc(10px + env(safe-area-inset-bottom)); background: #1d2026; border-top: 1px solid #2c313a; display: flex; flex-direction: column; gap: 8px; }
+  #log { flex: 1; overflow-y: auto; font-size: 15px; line-height: 1.35; }
+  .u { color: #9ecbff; margin: 2px 0; } .a { color: #eee; margin: 2px 0; } .s { color: #888; font-size: 13px; margin: 2px 0; }
+  #row { display: flex; gap: 8px; }
+  #in { flex: 1; font-size: 16px; padding: 10px; border-radius: 10px; border: 1px solid #3a404b; background: #14161a; color: #eee; }
+  button { font-size: 16px; border: 0; border-radius: 10px; padding: 10px 14px; background: #2f6feb; color: #fff; }
+  button.mic.on { background: #d33; }
+  button.sec { background: #3a404b; }
+  #status { position: fixed; top: calc(8px + env(safe-area-inset-top)); left: 0; right: 0; text-align: center; font-size: 13px; color: #aaa; }
+  dialog { background: #1d2026; color: #eee; border: 1px solid #3a404b; border-radius: 12px; max-width: 460px; width: 92%; }
+  dialog input, dialog textarea, dialog select { width: 100%; font-size: 16px; padding: 8px; margin: 4px 0 10px; border-radius: 8px; border: 1px solid #3a404b; background: #14161a; color: #eee; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<div id="status">Lade Avatar …</div>
+<div id="ui">
+  <div id="log"></div>
+  <div id="row">
+    <button class="mic" id="mic">🎤</button>
+    <input id="in" placeholder="Oder hier tippen …" autocomplete="off">
+    <button id="send">Senden</button>
+    <button class="sec" id="cfg">⚙︎</button>
+  </div>
+</div>
+
+<dialog id="dlg">
+  <form method="dialog">
+    <h3 style="margin-top:0">Einstellungen</h3>
+    <label>Anthropic-API-Schlüssel (bleibt nur in diesem Browser)</label>
+    <input id="key" type="password" placeholder="sk-ant-…" autocomplete="off">
+    <label>Modell</label>
+    <input id="model" value="claude-sonnet-5-5">
+    <label>Name des Avatars</label>
+    <input id="name" value="Jarvis">
+    <label>Stimme</label>
+    <select id="voice"></select>
+    <label><input type="checkbox" id="auto" checked style="width:auto"> Nach der Antwort automatisch weiter zuhören</label>
+    <label>Anweisung an den Avatar</label>
+    <textarea id="sys" rows="4"></textarea>
+    <button value="ok">Speichern</button>
+  </form>
+</dialog>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { KTX2Loader } from 'three/addons/loaders/KTX2Loader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const $ = id => document.getElementById(id);
+const store = {
+  get: (k, d = '') => { try { return localStorage.getItem('av_' + k) ?? d; } catch { return d; } },
+  set: (k, v) => { try { localStorage.setItem('av_' + k, v); } catch {} }
+};
+const DEFAULT_SYS = 'Du bist eine freundliche, sprechende Assistentin. Antworte auf Deutsch in kurzen, gesprochenen Sätzen ohne Listen, ohne Markdown und ohne Sonderzeichen.';
+const setStatus = t => $('status').textContent = t;
+const log = $('log');
+const add = (cls, t) => { const d = document.createElement('div'); d.className = cls; d.textContent = t; log.appendChild(d); log.scrollTop = log.scrollHeight; return d; };
+
+// ---------- 3D-Avatar ----------
+const stage = $('stage');
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+stage.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x14161a);
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+const camera = new THREE.PerspectiveCamera(30, 1, 0.01, 100);
+
+function resize() {
+  const w = stage.clientWidth, h = stage.clientHeight;
+  renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix();
+}
+addEventListener('resize', resize); resize();
+
+let face = null, head = null;
+const ktx2 = new KTX2Loader()
+  .setTranscoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/basis/')
+  .detectSupport(renderer);
+new GLTFLoader().setKTX2Loader(ktx2).setMeshoptDecoder(MeshoptDecoder)
+  .load('https://cdn.jsdelivr.net/gh/mrdoob/three.js@r160/examples/models/gltf/facecap.glb', gltf => {
+    head = gltf.scene;
+    scene.add(head);
+    head.traverse(o => { if (o.isMesh && o.morphTargetDictionary && o.morphTargetDictionary.jawOpen !== undefined) face = o; });
+    const box = new THREE.Box3().setFromObject(head);
+    const size = box.getSize(new THREE.Vector3()), c = box.getCenter(new THREE.Vector3());
+    head.position.sub(c);
+    const dist = (Math.max(size.y, size.x) / 2) / Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * 1.25;
+    camera.position.set(0, 0, dist);
+    setStatus(face ? 'Bereit. Tippe auf das Mikrofon.' : 'Avatar geladen, aber ohne Gesichtsbewegung.');
+  }, undefined, e => setStatus('Avatar konnte nicht geladen werden: ' + (e.message || e)));
+
+const morph = (name, v) => { if (!face) return; const i = face.morphTargetDictionary[name]; if (i !== undefined) face.morphTargetInfluences[i] = v; };
+let speaking = false, nextBlink = 2, blink = 0, t0 = performance.now();
+let mouth = 0; // 0..1, vom Sprechen getrieben
+const smooth = { jaw: 0, funnel: 0, smile: 0 };
+
+function frame(now) {
+  requestAnimationFrame(frame);
+  const t = (now - t0) / 1000;
+  if (head) {
+    head.rotation.y = Math.sin(t * 0.5) * 0.08;
+    head.rotation.x = Math.sin(t * 0.37) * 0.03;
+  }
+  // Lippenbewegung: Silben-ähnlicher Rhythmus, solange gesprochen wird
+  const target = speaking ? Math.max(0, Math.sin(t * 13) * 0.5 + Math.sin(t * 7.3) * 0.3 + 0.25) * mouth : 0;
+  smooth.jaw += (target - smooth.jaw) * 0.35;
+  smooth.funnel += ((speaking ? Math.max(0, Math.sin(t * 6.1)) * 0.35 : 0) - smooth.funnel) * 0.25;
+  smooth.smile += ((speaking ? 0.12 : 0.18) - smooth.smile) * 0.1;
+  morph('jawOpen', smooth.jaw * 0.55);
+  morph('mouthFunnel', smooth.funnel);
+  morph('mouthSmile_L', smooth.smile); morph('mouthSmile_R', smooth.smile);
+  // Blinzeln
+  if (t > nextBlink) { blink = 1; nextBlink = t + 2 + Math.random() * 3; }
+  blink = Math.max(0, blink - 0.12);
+  morph('eyeBlink_L', blink); morph('eyeBlink_R', blink);
+  renderer.render(scene, camera);
+}
+requestAnimationFrame(frame);
+
+// ---------- Stimme ----------
+let voices = [];
+function loadVoices() {
+  voices = speechSynthesis.getVoices().filter(v => v.lang.startsWith('de'));
+  const sel = $('voice'); sel.innerHTML = '';
+  voices.forEach((v, i) => { const o = document.createElement('option'); o.value = v.name; o.textContent = v.name + ' (' + v.lang + ')'; sel.appendChild(o); });
+  const saved = store.get('voice'); if (saved) sel.value = saved;
+}
+speechSynthesis.onvoiceschanged = loadVoices; loadVoices();
+
+function speak(text) {
+  return new Promise(res => {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'de-DE';
+    const v = voices.find(x => x.name === store.get('voice')) || voices.find(x => /anna|petra|marlene|katja|female|weiblich/i.test(x.name)) || voices[0];
+    if (v) u.voice = v;
+    u.rate = 1.0; u.pitch = 1.05;
+    u.onstart = () => { speaking = true; mouth = 1; setStatus('Spricht …'); };
+    u.onboundary = () => { mouth = 0.6 + Math.random() * 0.5; };
+    u.onend = u.onerror = () => { speaking = false; res(); };
+    speechSynthesis.speak(u);
+  });
+}
+
+// ---------- Mikrofon ----------
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec = null, listening = false, busy = false;
+function startListening() {
+  if (!SR) { setStatus('Spracherkennung fehlt. Nutze Safari oder Chrome.'); return; }
+  if (busy || listening) return;
+  speechSynthesis.cancel();
+  rec = new SR(); rec.lang = 'de-DE'; rec.interimResults = true; rec.continuous = false;
+  let finalText = '';
+  rec.onstart = () => { listening = true; $('mic').classList.add('on'); setStatus('Ich höre zu …'); };
+  rec.onresult = e => { let t = ''; for (const r of e.results) t += r[0].transcript; finalText = t; setStatus(t || 'Ich höre zu …'); };
+  rec.onerror = e => {
+    listening = false; $('mic').classList.remove('on'); finalText = '';
+    if (e.error === 'not-allowed') setStatus('Mikrofon blockiert. Bitte im Browser erlauben.');
+    else if (e.error !== 'no-speech' && e.error !== 'aborted') setStatus('Fehler: ' + e.error);
+  };
+  rec.onend = () => {
+    listening = false; $('mic').classList.remove('on');
+    const t = finalText.trim();
+    if (t) send(t); else if (!busy) setStatus('Nichts gehört. Tippe auf das Mikrofon.');
+  };
+  try { rec.start(); } catch {}
+}
+$('mic').onclick = () => listening ? rec.stop() : startListening();
+
+// ---------- Claude ----------
+const history = [];
+async function send(text) {
+  const key = store.get('key');
+  if (!key) { $('dlg').showModal(); setStatus('Bitte zuerst den API-Schlüssel eintragen.'); return; }
+  busy = true;
+  add('u', text); history.push({ role: 'user', content: text });
+  const bubble = add('a', '…'); setStatus('Denkt nach …');
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({ model: store.get('model', 'claude-sonnet-5-5'), max_tokens: 1024, system: store.get('sys', DEFAULT_SYS), messages: history.slice(-30) })
+    });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error?.message || r.status);
+    const reply = j.content.filter(b => b.type === 'text').map(b => b.text).join('\n').trim();
+    history.push({ role: 'assistant', content: reply });
+    bubble.textContent = reply; log.scrollTop = log.scrollHeight;
+    busy = false;
+    await speak(reply);
+    setStatus('Bereit.');
+    if ($('auto').checked) startListening();
+  } catch (e) {
+    busy = false; history.pop();
+    bubble.textContent = 'Fehler: ' + e.message; bubble.className = 's';
+    setStatus('Fehler bei der Anfrage.');
+  }
+}
+const submit = () => { const t = $('in').value.trim(); if (t && !busy) { $('in').value = ''; send(t); } };
+$('send').onclick = submit;
+$('in').onkeydown = e => { if (e.key === 'Enter') submit(); };
+
+// ---------- Einstellungen ----------
+$('key').value = store.get('key');
+$('model').value = store.get('model', 'claude-sonnet-5-5');
+$('name').value = store.get('name', 'Jarvis');
+$('sys').value = store.get('sys', DEFAULT_SYS);
+$('auto').checked = store.get('auto', '1') === '1';
+$('cfg').onclick = () => { loadVoices(); $('dlg').showModal(); };
+$('dlg').addEventListener('close', () => {
+  store.set('key', $('key').value.trim()); store.set('model', $('model').value.trim());
+  store.set('name', $('name').value.trim()); store.set('sys', $('sys').value);
+  store.set('voice', $('voice').value); store.set('auto', $('auto').checked ? '1' : '0');
+});
+add('s', 'Tippe auf das Mikrofon und sprich. Beim ersten Mal den API-Schlüssel unter ⚙︎ eintragen.');
+if (!store.get('key')) setTimeout(() => $('dlg').showModal(), 600);
+</script>
+</body>
+</html>
