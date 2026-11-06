@@ -1,5 +1,5 @@
 // Minimaler Service Worker: macht die App installierbar und startet auch bei schlechtem Netz.
-const CACHE = 'app-shell-v6';
+const CACHE = 'app-shell-v7';
 const SHELL = ['./', './index.html', './danke.html', './app.html', './style.css', './site.config.js', './install.js', './demo.js', './profil.js', './profil.css', './firma.js', './blaetter.js', './app.js', './team.js', './install.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png'];
 
 self.addEventListener('install', e => {

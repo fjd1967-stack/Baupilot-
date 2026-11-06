@@ -61,3 +61,5 @@ select{width:100%;min-height:48px;padding:0 12px;border:2px solid var(--rand);bo
 .t-eintrag{padding:12px;border:1px solid var(--rand);border-radius:12px;background:#fff;margin-bottom:8px}
 .t-eintrag .name{font-weight:600}.t-eintrag .meta{font-size:13px;color:var(--grau);margin:2px 0 8px}
 .t-eintrag .zeile2{display:flex;flex-wrap:wrap;gap:8px}.t-eintrag .btn{min-height:40px}
+.check{display:flex;gap:10px;align-items:flex-start;margin:16px 0 4px;line-height:1.4}
+.check input{width:24px;height:24px;flex:none;margin-top:2px}

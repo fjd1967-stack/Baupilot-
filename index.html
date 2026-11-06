@@ -199,6 +199,7 @@
     document.getElementById('kaufen').addEventListener('click', function () {
       var k = anzahl();
       try { localStorage.setItem('plan-v1', JSON.stringify({ n: k })); } catch (e) {}
+      if (S.shop) { location.href = 'bestellen.html?nutzer=' + k; return; }
       if (S.paypalLink) { location.href = S.paypalLink + (S.paypalLink.indexOf('?') < 0 ? '?' : '&') + 'nutzer=' + k; return; }
       document.getElementById('kauf-meldung').textContent = 'Der Verkauf startet in Kürze. Gewählt: ' + k + ' Nutzer.';
     });

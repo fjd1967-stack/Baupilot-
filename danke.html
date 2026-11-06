@@ -15,6 +15,7 @@
   <header class="top"><a class="logo" href="./"><i></i><span data-name>BauPilot</span></a></header>
   <main class="danke">
     <h1>Danke. Jetzt kommt <span data-name>BauPilot</span> auf dein Handy.</h1>
+    <p class="lead" id="mail-hinweis" hidden>Wir haben dir eine E-Mail mit dem Anmelde-Link geschickt. Danach legst du deine Nutzer an. Sie bekommen die Einladung zum Installieren.</p>
     <p class="lead">Öffne diese Seite auf dem Handy, auf dem du <span data-name>BauPilot</span> nutzen willst, und tippe auf den Knopf.</p>
     <button class="btn gelb" data-install type="button">BauPilot installieren</button>
     <p class="hinweis" id="schon" hidden>BauPilot ist schon installiert. Du findest es auf deinem Startbildschirm.</p>
@@ -31,7 +32,7 @@
 <script src="install.js" data-app-name="BauPilot" data-color="#0f2238" defer></script>
 <script>
   if ('serviceWorker' in navigator) addEventListener('load', function () { navigator.serviceWorker.register('sw.js'); });
-  addEventListener('load', function () { if (window.AppInstall && AppInstall.isStandalone()) document.getElementById('schon').hidden = false; });
+  addEventListener('load', function () { if (/[?&]k=/.test(location.search)) document.getElementById('mail-hinweis').hidden = false; if (window.AppInstall && AppInstall.isStandalone()) document.getElementById('schon').hidden = false; });
 </script>
 </body>
 </html>

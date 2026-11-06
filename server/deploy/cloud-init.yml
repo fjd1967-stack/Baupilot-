@@ -1,0 +1,33 @@
+#cloud-config
+# Beim Anlegen des Hetzner-Servers unter "Cloud-Config" einfügen. SSH-Schlüssel unten eintragen.
+package_update: true
+package_upgrade: true
+packages: [ ufw, fail2ban, unattended-upgrades, docker.io, docker-compose-v2, git, python3 ]
+users:
+  - name: deploy
+    groups: [ docker, sudo ]
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    ssh_authorized_keys: [ "HIER-OEFFENTLICHEN-SSH-SCHLUESSEL-EINTRAGEN" ]
+write_files:
+  - path: /etc/ssh/sshd_config.d/99-haerten.conf
+    content: |
+      PermitRootLogin no
+      PasswordAuthentication no
+      KbdInteractiveAuthentication no
+      MaxAuthTries 3
+  - path: /etc/apt/apt.conf.d/20auto-upgrades
+    content: |
+      APT::Periodic::Update-Package-Lists "1";
+      APT::Periodic::Unattended-Upgrade "1";
+      Unattended-Upgrade::Automatic-Reboot "true";
+      Unattended-Upgrade::Automatic-Reboot-Time "04:30";
+runcmd:
+  - ufw default deny incoming
+  - ufw default allow outgoing
+  - ufw allow 22/tcp
+  - ufw allow 80/tcp
+  - ufw allow 443/tcp
+  - ufw --force enable
+  - systemctl enable --now fail2ban docker
+  - systemctl restart ssh

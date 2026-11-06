@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Bestellen</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="profil.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="top"><a class="logo" href="./"><i></i><span data-name>BauPilot</span></a></header>
+  <main class="profil">
+    <h1>Dein Auftrag</h1>
+    <p class="lead">Du zahlst monatlich per SEPA-Lastschrift und kannst jeden Monat kündigen. Die Rechnung kommt automatisch per E-Mail.</p>
+    <p class="fehler" id="abbruch" hidden>Die Bezahlung wurde abgebrochen. Du kannst es erneut versuchen.</p>
+    <form id="best" novalidate>
+      <div class="feld"><label for="firma">Firmenname</label><input id="firma" autocomplete="organization" required><p class="fehler" id="e-firma" role="alert"></p></div>
+      <div class="feld"><label for="strasse">Straße und Hausnummer</label><input id="strasse" autocomplete="street-address" required><p class="fehler" id="e-strasse" role="alert"></p></div>
+      <div class="zeile plz">
+        <div class="feld"><label for="plz">PLZ</label><input id="plz" inputmode="numeric" maxlength="5" autocomplete="postal-code" required><p class="fehler" id="e-plz" role="alert"></p></div>
+        <div class="feld"><label for="ort">Ort</label><input id="ort" autocomplete="address-level2" required><p class="fehler" id="e-ort" role="alert"></p></div>
+      </div>
+      <div class="feld"><label for="ust">USt-IdNr. <span class="optional">(freiwillig)</span></label><input id="ust" autocapitalize="characters" placeholder="DE123456789"><p class="fehler" id="e-ust" role="alert"></p></div>
+      <div class="feld"><label for="name">Dein Name</label><input id="name" autocomplete="name" required><p class="fehler" id="e-name" role="alert"></p></div>
+      <div class="feld"><label for="email">E-Mail</label><input id="email" type="email" inputmode="email" autocomplete="email" required><p class="fehler" id="e-email" role="alert"></p></div>
+      <div class="feld"><label for="nutzer">Anzahl Nutzer (du eingeschlossen)</label><input id="nutzer" type="number" inputmode="numeric" min="1" max="200" value="5"></div>
+      <p class="plan" id="summe" aria-live="polite"></p>
+      <label class="check"><input type="checkbox" id="agb"> Ich erteile den Auftrag und akzeptiere die <a href="agb.html" target="_blank">AGB</a> und die <a href="datenschutz.html" target="_blank">Datenschutzerklärung</a>.</label>
+      <p class="fehler" id="e-agb" role="alert"></p>
+      <div class="knoepfe"><button class="btn gelb gross" type="submit" id="los">Weiter zur Zahlung</button></div>
+      <p class="fehler" id="e-form" role="alert"></p>
+    </form>
+  </main>
+</div>
+<script src="site.config.js"></script>
+<script>
+(function(){
+  var S=window.SITE||{},$=function(i){return document.getElementById(i)};
+  var P1=S.priceFirst||39.9,P2=S.priceExtra||9.9;
+  var eur=function(x){return x.toFixed(2).replace('.',',')+' €'};
+  document.querySelectorAll('[data-name]').forEach(function(e){e.textContent=S.name||'BauPilot'});
+  var p=new URLSearchParams(location.search);
+  if(p.get('nutzer'))$('nutzer').value=Math.min(200,Math.max(1,parseInt(p.get('nutzer'),10)||5));
+  if(p.get('abgebrochen'))$('abbruch').hidden=false;
+  function n(){var v=parseInt($('nutzer').value,10);return v>=1?Math.min(v,200):1}
+  function rechne(){var k=n();$('summe').textContent=eur(P1+(k-1)*P2)+' im Monat netto, zuzüglich Umsatzsteuer'}
+  $('nutzer').addEventListener('input',rechne);rechne();
+  function f(id,t){var e=$('e-'+id);if(e)e.textContent=t||'';var x=$(id);if(x){if(t)x.setAttribute('aria-invalid','true');else x.removeAttribute('aria-invalid')}return !t}
+  $('best').addEventListener('submit',function(ev){
+    ev.preventDefault();var v=function(i){return $(i).value.trim()};
+    var ok=true;
+    ok=f('firma',v('firma').length<2?'Bitte gib den Firmennamen ein.':'')&&ok;
+    ok=f('strasse',v('strasse').length<3?'Bitte gib Straße und Hausnummer ein.':'')&&ok;
+    ok=f('plz',/^\d{5}$/.test(v('plz'))?'':'Bitte gib eine PLZ mit 5 Ziffern ein.')&&ok;
+    ok=f('ort',v('ort').length<2?'Bitte gib den Ort ein.':'')&&ok;
+    ok=f('name',v('name').length<2?'Bitte gib deinen Namen ein.':'')&&ok;
+    ok=f('email',/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v('email'))?'':'Bitte gib eine gültige E-Mail-Adresse ein.')&&ok;
+    ok=f('agb',$('agb').checked?'':'Bitte nimm den Auftrag und die AGB an.')&&ok;
+    if(!ok){var x=document.querySelector('[aria-invalid=true]');if(x)x.focus();return}
+    $('los').disabled=true;$('e-form').textContent='';
+    fetch('/api/auftrag',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({firma:v('firma'),strasse:v('strasse'),plz:v('plz'),ort:v('ort'),ust:v('ust'),name:v('name'),email:v('email'),nutzer:n(),agb:true})})
+      .then(function(r){return r.json().then(function(j){return{s:r.status,j:j}})})
+      .then(function(r){if(r.s===200&&r.j.url){location.href=r.j.url}else{$('e-form').textContent=r.j.fehler||'Das hat nicht geklappt. Bitte versuche es noch einmal.';$('los').disabled=false}})
+      .catch(function(){$('e-form').textContent='Keine Verbindung. Bitte versuche es noch einmal.';$('los').disabled=false});
+  });
+})();
+</script>
+</body>
+</html>

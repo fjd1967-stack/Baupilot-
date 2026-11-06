@@ -1,0 +1,22 @@
+# Start: cp .env.example .env (ausfüllen), dann: docker compose up -d --build
+services:
+  app:
+    build: { context: .., dockerfile: deploy/Dockerfile }
+    restart: always
+    env_file: .env
+    environment: { BIND: "0.0.0.0" }
+    volumes: [ "daten:/data" ]
+    read_only: true
+    tmpfs: [ /tmp ]
+    cap_drop: [ ALL ]
+    security_opt: [ "no-new-privileges:true" ]
+  caddy:
+    image: caddy:2
+    restart: always
+    ports: [ "80:80", "443:443" ]
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ../..:/srv/site:ro          # die Webseite (Repo-Wurzel), Server-Ordner wird in Caddyfile gesperrt
+      - caddy_daten:/data
+    depends_on: [ app ]
+volumes: { daten: {}, caddy_daten: {} }
