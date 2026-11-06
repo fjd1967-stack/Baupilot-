@@ -124,13 +124,22 @@
     <div class="wrap preis">
       <div>
         <h2 id="h-preis">Ein Preis für dein ganzes Team.</h2>
-        <p class="lead">Fünf Nutzer sind im Preis enthalten, jeder weitere kostet 9,90 € im Monat. Keine Einrichtungsgebühr, jeden Monat kündbar.</p>
+        <p class="lead">Du zahlst 39,90 € für den ersten Nutzer und 9,90 € für jeden weiteren. Du wählst, wie viele Nutzer du brauchst, und legst sie danach selbst an. Keine Einrichtungsgebühr, jeden Monat kündbar.</p>
       </div>
       <div>
+        <div class="konf">
+          <label for="anz">Wie viele Nutzer brauchst du?</label>
+          <div class="schritt">
+            <button type="button" id="minus" aria-label="Einen Nutzer weniger">−</button>
+            <input id="anz" type="number" inputmode="numeric" min="1" max="200" value="5">
+            <button type="button" id="plus" aria-label="Einen Nutzer mehr">+</button>
+          </div>
+        </div>
         <p class="preis-zahl" id="preis-zahl">Preis folgt</p>
         <p class="preis-einheit" id="preis-einheit"></p>
         <ul>
-          <li>Bis zu 5 Nutzer, unbegrenzt viele Baustellen</li>
+          <li>Du legst deine Nutzer selbst an, sie bekommen die Einladung zum Installieren</li>
+          <li>Unbegrenzt viele Baustellen</li>
           <li>Aufgaben in sieben Sprachen</li>
           <li>Rückmeldung per WhatsApp</li>
           <li>Bautagebuch, Belege und tägliche Sicherung</li>
@@ -172,11 +181,26 @@
       for (var i = 0; i < n.length; i++) n[i].textContent = S.name;
       document.title = S.name + ' – Die Baustellen-App für Poliere und Bauleiter';
     }
-    var z = document.getElementById('preis-zahl');
-    if (S.price) { z.textContent = S.price; document.getElementById('preis-einheit').textContent = S.priceUnit || ''; document.getElementById('preis-hinweis').textContent = S.priceNote || ''; }
+    var z = document.getElementById('preis-zahl'), anz = document.getElementById('anz');
+    var P1 = S.priceFirst || 39.9, P2 = S.priceExtra || 9.9, MAX = S.maxUsers || 200;
+    var eur = function (x) { return x.toFixed(2).replace('.', ',') + ' €'; };
+    function anzahl() { var v = parseInt(anz.value, 10); if (!(v >= 1)) v = 1; return Math.min(v, MAX); }
+    function rechne() {
+      var k = anzahl(), summe = P1 + (k - 1) * P2;
+      z.textContent = eur(summe);
+      document.getElementById('preis-einheit').textContent = 'im Monat für ' + k + (k === 1 ? ' Nutzer' : ' Nutzer');
+      document.getElementById('preis-hinweis').textContent = '1. Nutzer ' + eur(P1) + (k > 1 ? ', ' + (k - 1) + ' weitere je ' + eur(P2) : '') + '. Preise zzgl. MwSt., monatlich kündbar.';
+    }
+    anz.addEventListener('input', rechne);
+    anz.addEventListener('blur', function () { anz.value = anzahl(); rechne(); });
+    document.getElementById('minus').addEventListener('click', function () { anz.value = Math.max(1, anzahl() - 1); rechne(); });
+    document.getElementById('plus').addEventListener('click', function () { anz.value = Math.min(MAX, anzahl() + 1); rechne(); });
+    rechne();
     document.getElementById('kaufen').addEventListener('click', function () {
-      if (S.paypalLink) { location.href = S.paypalLink; return; }
-      document.getElementById('kauf-meldung').textContent = 'Der Verkauf startet in Kürze.';
+      var k = anzahl();
+      try { localStorage.setItem('plan-v1', JSON.stringify({ n: k })); } catch (e) {}
+      if (S.paypalLink) { location.href = S.paypalLink + (S.paypalLink.indexOf('?') < 0 ? '?' : '&') + 'nutzer=' + k; return; }
+      document.getElementById('kauf-meldung').textContent = 'Der Verkauf startet in Kürze. Gewählt: ' + k + ' Nutzer.';
     });
   })();
   if ('serviceWorker' in navigator) addEventListener('load', function () { navigator.serviceWorker.register('sw.js'); });

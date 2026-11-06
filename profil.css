@@ -55,3 +55,9 @@ select{width:100%;min-height:48px;padding:0 12px;border:2px solid var(--rand);bo
 .b-eintrag .name{flex:1 1 100%;font-weight:600;word-break:break-all}
 .b-eintrag .meta{flex:1 1 100%;font-size:13px;color:var(--grau)}
 .b-eintrag .btn{min-height:40px}
+
+.tabs button{font-size:14px;padding:0 4px}
+.plan{font-weight:600;margin:0 0 16px}
+.t-eintrag{padding:12px;border:1px solid var(--rand);border-radius:12px;background:#fff;margin-bottom:8px}
+.t-eintrag .name{font-weight:600}.t-eintrag .meta{font-size:13px;color:var(--grau);margin:2px 0 8px}
+.t-eintrag .zeile2{display:flex;flex-wrap:wrap;gap:8px}.t-eintrag .btn{min-height:40px}

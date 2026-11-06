@@ -18,6 +18,7 @@
   <nav class="tabs" id="tabs" role="tablist" aria-label="Bereiche" hidden>
     <button role="tab" id="t-profil" aria-selected="true" aria-controls="tab-profil" data-tab="profil">Profil</button>
     <button role="tab" id="t-firma" aria-selected="false" aria-controls="tab-firma" data-tab="firma" tabindex="-1">Firma</button>
+    <button role="tab" id="t-team" aria-selected="false" aria-controls="tab-team" data-tab="team" tabindex="-1">Team</button>
     <button role="tab" id="t-blaetter" aria-selected="false" aria-controls="tab-blaetter" data-tab="blaetter" tabindex="-1">Formblätter</button>
   </nav>
 
@@ -204,6 +205,19 @@
     </form>
    </div>
 
+   <div class="tab" id="tab-team" role="tabpanel" aria-labelledby="t-team" hidden>
+    <h1>Dein Team</h1>
+    <p class="lead">Lege hier die Nutzer an, die du gebucht hast. Jeder bekommt eine Einladung zum Installieren der App.</p>
+    <p class="plan" id="t-plan"></p>
+    <form id="team-form" novalidate>
+      <div class="feld"><label for="t-name">Name</label><input id="t-name" type="text" autocomplete="off" aria-describedby="e-t-name"><p class="fehler" id="e-t-name" role="alert"></p></div>
+      <div class="feld"><label for="t-kontakt">Handynummer oder E-Mail</label><input id="t-kontakt" type="text" inputmode="email" autocomplete="off" aria-describedby="e-t-kontakt"><p class="fehler" id="e-t-kontakt" role="alert"></p></div>
+      <div class="knoepfe"><button class="btn gelb gross" type="submit">Nutzer anlegen</button></div>
+    </form>
+    <div id="t-liste" aria-live="polite"></div>
+    <p class="hilfe">Die Einladung geht per WhatsApp oder E-Mail an den Nutzer und enthält den Link zum Installieren. Das automatische Versenden und die Abrechnung der Nutzer folgen mit dem Server.</p>
+   </div>
+
    <div class="tab" id="tab-blaetter" role="tabpanel" aria-labelledby="t-blaetter" hidden>
     <h1>Formblätter</h1>
     <p class="lead">Lade deine Vorlagen und Formulare hoch, zum Beispiel Aufgabenblätter, Bautagebuch oder Nachträge. Du findest sie hier wieder.</p>
@@ -232,6 +246,7 @@
 <script src="profil.js"></script>
 <script src="firma.js"></script>
 <script src="blaetter.js"></script>
+<script src="team.js"></script>
 <script src="app.js"></script>
 <script>if ('serviceWorker' in navigator) addEventListener('load', function () { navigator.serviceWorker.register('sw.js'); });</script>
 <script>(function(){var n=(window.SITE||{}).name;if(!n)return;var e=document.querySelectorAll("[data-name]");for(var i=0;i<e.length;i++)e[i].textContent=n;document.title=document.title.replace(/BauPilot/g,n);})();</script>

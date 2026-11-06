@@ -243,3 +243,9 @@ h1,h2{letter-spacing:-.032em;word-spacing:.06em}
 }
 @media (min-width:1000px){.hero-text{padding-bottom:20px}}
 @media (min-width:1000px){.hero-text{padding-bottom:56px}}
+
+.konf{margin:0 0 16px}.konf label{display:block;font-weight:600;margin-bottom:8px}
+.schritt{display:flex;gap:8px;align-items:stretch}
+.schritt button{width:52px;min-height:52px;border:2px solid var(--blau);background:#fff;color:var(--blau);border-radius:12px;font:700 26px/1 Inter,system-ui,sans-serif;cursor:pointer}
+.schritt input{width:90px;min-height:52px;text-align:center;font:700 22px/1 Inter,system-ui,sans-serif;border:2px solid var(--blau);border-radius:12px;background:#fff;color:var(--blau)}
+.schritt button:focus-visible,.schritt input:focus-visible{outline:3px solid var(--fokus);outline-offset:2px}
