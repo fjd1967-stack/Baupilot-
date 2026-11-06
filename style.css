@@ -1,0 +1,105 @@
+:root{
+  --beton:#e5e6e2; --weiss:#fbfbf9; --tinte:#16191d; --signal:#ffc20e; --stahl:#2c4a63; --grau:#5b616a; --linie:#c9cbc5;
+  --kopf:"Barlow Condensed","Arial Narrow",Impact,sans-serif; --text:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--beton);color:var(--tinte);font:400 18px/1.55 var(--text);-webkit-text-size-adjust:100%}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--stahl);outline-offset:3px;border-radius:4px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+
+/* Kopf */
+.top{display:flex;align-items:center;justify-content:space-between;padding:18px 0}
+.logo{font:600 28px/1 var(--kopf);letter-spacing:.02em;text-decoration:none;display:flex;align-items:center;gap:10px}
+.logo i{display:inline-block;width:22px;height:22px;background:var(--signal);clip-path:polygon(50% 0,100% 85%,50% 62%,0 85%)}
+
+/* Knöpfe */
+.btn{display:inline-block;border:0;border-radius:6px;padding:16px 28px;font:600 19px/1 var(--text);cursor:pointer;text-decoration:none;background:var(--tinte);color:#fff;min-height:52px}
+.btn.gelb{background:var(--signal);color:var(--tinte)}
+.btn.klein{padding:12px 20px;font-size:16px;min-height:44px}
+.btn:hover{filter:brightness(1.08)}
+.btn[hidden]{display:none}
+
+/* Hero */
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;padding:56px 0 88px}
+h1{font:600 clamp(44px,7vw,84px)/.95 var(--kopf);letter-spacing:-.005em;margin:0 0 24px;text-transform:none}
+.lead{font-size:21px;max-width:30em;margin:0 0 32px;color:#2b2f35}
+.hero .sub{margin-top:14px;color:var(--grau);font-size:16px}
+
+/* Aufgabenzettel – das eine auffällige Element */
+.zettel{background:var(--weiss);border:2px solid var(--tinte);border-radius:4px;box-shadow:10px 10px 0 var(--tinte);padding:0;max-width:440px;justify-self:center;width:100%}
+.zettel .kopf{background:var(--signal);border-bottom:2px solid var(--tinte);padding:12px 18px;display:flex;justify-content:space-between;font:600 18px/1 var(--kopf);letter-spacing:.04em}
+.zettel .kopf span:last-child{font-weight:500}
+.zettel .inhalt{padding:22px 18px 8px}
+.zettel .de{font:600 34px/1.05 var(--kopf);margin:0 0 6px}
+.zettel .ort{color:var(--grau);font-size:15px;margin:0 0 18px}
+.zettel .uebers{border-top:1px solid var(--linie);padding:10px 0;font-size:15px;color:#3b4047;display:flex;gap:10px}
+.zettel .uebers b{flex:none;width:2.4em;color:var(--stahl);font-weight:600}
+.zettel .fuss{padding:14px 18px 18px}
+.erledigt{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:var(--tinte);color:#fff;border-radius:4px;padding:15px;font:600 20px/1 var(--kopf);letter-spacing:.06em;text-decoration:none;min-height:52px}
+.erledigt svg{width:22px;height:22px}
+
+/* Abschnitte */
+section{padding:72px 0;border-top:2px solid var(--tinte)}
+h2{font:600 clamp(34px,5vw,52px)/1 var(--kopf);margin:0 0 36px;max-width:16em}
+.liste{display:grid;grid-template-columns:1fr 1fr;gap:0 56px;margin:0;padding:0;list-style:none}
+.liste li{padding:22px 0;border-top:1px solid var(--linie)}
+.liste li:nth-child(-n+2){border-top:0;padding-top:0}
+.liste h3{font:600 26px/1.1 var(--kopf);margin:0 0 6px}
+.liste p{margin:0;color:#3b4047;max-width:30em}
+
+.schritte{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin:0;padding:0;list-style:none;border:2px solid var(--tinte);background:var(--weiss)}
+.schritte li{padding:26px 24px;border-left:2px solid var(--tinte)}
+.schritte li:first-child{border-left:0}
+.schritte b{display:block;font:600 56px/1 var(--kopf);color:var(--signal);-webkit-text-stroke:2px var(--tinte);margin-bottom:10px}
+.schritte h3{font:600 26px/1.1 var(--kopf);margin:0 0 6px}
+.schritte p{margin:0;color:#3b4047}
+
+/* Preis */
+.preis{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+.kasten{background:var(--tinte);color:#fff;padding:36px;border-radius:4px}
+.kasten .zahl{font:600 76px/1 var(--kopf);color:var(--signal);margin:0}
+.kasten .einheit{margin:4px 0 22px;color:#cfd2d6}
+.kasten ul{margin:0 0 26px;padding:0;list-style:none}
+.kasten li{padding:8px 0 8px 28px;position:relative;border-top:1px solid #3a4047}
+.kasten li::before{content:"";position:absolute;left:2px;top:15px;width:12px;height:7px;border-left:3px solid var(--signal);border-bottom:3px solid var(--signal);transform:rotate(-45deg)}
+.hinweis{margin:14px 0 0;font-size:15px;color:var(--grau)}
+.kasten .hinweis{color:#cfd2d6}
+#kauf-meldung{margin-top:14px;font-weight:600}
+
+details{border-top:1px solid var(--linie);padding:18px 0}
+details:last-of-type{border-bottom:1px solid var(--linie)}
+summary{font:600 24px/1.2 var(--kopf);cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:16px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-size:28px;line-height:1}
+details[open] summary::after{content:"–"}
+details p{margin:10px 0 0;max-width:38em;color:#3b4047}
+
+footer{border-top:2px solid var(--tinte);padding:28px 0 40px;font-size:15px;color:var(--grau);display:flex;flex-wrap:wrap;gap:12px 28px;justify-content:space-between}
+footer nav{display:flex;gap:22px}
+
+/* Textseiten */
+.seite{padding:40px 0 80px;max-width:760px}
+.seite h1{font-size:clamp(40px,6vw,64px)}
+.seite h2{font-size:30px;margin:32px 0 8px}
+.seite p,.seite li{color:#2b2f35}
+.platz{background:#fff3c4;padding:0 4px}
+
+/* Danke-Seite */
+.danke{padding:48px 0 80px;max-width:760px}
+.danke .schritt{display:flex;gap:16px;padding:18px 0;border-top:1px solid var(--linie)}
+.danke .schritt b{flex:none;font:600 40px/1 var(--kopf);color:var(--stahl);width:1.2em}
+
+@media (max-width:860px){
+  body{font-size:17px}
+  .hero{grid-template-columns:1fr;gap:40px;padding:28px 0 64px}
+  .liste,.preis{grid-template-columns:1fr;gap:0}
+  .liste li:nth-child(2){border-top:1px solid var(--linie);padding-top:22px}
+  .schritte{grid-template-columns:1fr}
+  .schritte li{border-left:0;border-top:2px solid var(--tinte)}
+  .schritte li:first-child{border-top:0}
+  .preis .kasten{margin-top:32px}
+  section{padding:52px 0}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}

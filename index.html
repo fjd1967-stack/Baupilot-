@@ -3,35 +3,115 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>BauPilot</title>
+<title>BauPilot – Die Baustellen-App für Poliere und Bauleiter</title>
+<meta name="description" content="Aufgaben, Bautagebuch und Belege auf dem Handy. Aufgaben in sieben Sprachen, Rückmeldung per WhatsApp. Ohne App-Store, in zwei Minuten installiert.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<meta name="theme-color" content="#c2410c">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="BauPilot">
-<style>
-  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#fff;color:#111;display:flex;min-height:100vh;align-items:center;justify-content:center;text-align:center;padding:24px;box-sizing:border-box}
-  .card{max-width:420px}
-  img{width:96px;height:96px;border-radius:22px}
-  h1{margin:16px 0 6px;font-size:28px}
-  p{color:#555;font-size:17px;line-height:1.45;margin:0 0 24px}
-  [data-install]{background:#c2410c;color:#fff;border:0;border-radius:14px;padding:16px 28px;font-size:18px;font-weight:600;cursor:pointer}
-  [data-install][hidden]{display:none}
-  .open{display:inline-block;margin-top:14px;color:#c2410c;font-size:16px}
-  @media (prefers-color-scheme:dark){body{background:#111;color:#f2f2f2}p{color:#aaa}}
-</style>
+<meta name="theme-color" content="#ffc20e">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=Barlow:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-<main class="card">
-  <img src="icons/icon-192.png" alt="">
-  <h1>BauPilot</h1>
-  <p>Die Baustellen-App für Poliere und Bauleiter. Installiere sie auf deinem Handy, dann startet sie wie jede andere App.</p>
-  <button data-install>App installieren</button>
-  <div><a class="open" href="app.html">App direkt im Browser öffnen</a></div>
-</main>
-<script src="install.js" data-app-name="BauPilot" data-color="#c2410c" defer></script>
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="./"><i></i>BauPilot</a>
+    <a class="btn gelb klein" href="#preis" data-buy-link>Jetzt kaufen</a>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div>
+        <h1>Jeder auf der Baustelle weiß, was heute dran ist.</h1>
+        <p class="lead">Aufgaben, Bautagebuch und Belege auf dem Handy. Die Aufgabe kommt in der Sprache an, die dein Mitarbeiter versteht, und die Rückmeldung läuft über WhatsApp.</p>
+        <a class="btn gelb" href="#preis" data-buy-link>BauPilot kaufen</a>
+        <p class="sub">Kein App-Store. Nach dem Kauf in zwei Minuten auf dem Startbildschirm.</p>
+      </div>
+
+      <article class="zettel" aria-label="Beispiel einer Aufgabe in BauPilot">
+        <div class="kopf"><span>AUFGABE 14</span><span>Heute</span></div>
+        <div class="inhalt">
+          <p class="de">Betonschnitte um das Becken fertigstellen</p>
+          <p class="ort">Baustelle Pforzheim, Becken 2</p>
+          <div class="uebers"><b>RO</b><span>Finalizați tăierile de beton în jurul bazinului</span></div>
+          <div class="uebers"><b>TR</b><span>Havuzun etrafındaki beton kesimlerini tamamlayın</span></div>
+          <div class="uebers"><b>PL</b><span>Dokończyć cięcia betonu wokół basenu</span></div>
+        </div>
+        <div class="fuss">
+          <a class="erledigt" href="#preis">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+            ERLEDIGT per WhatsApp melden
+          </a>
+        </div>
+      </article>
+    </div>
+
+    <section aria-labelledby="h-kann">
+      <h2 id="h-kann">Gebaut für Poliere und Bauleiter, nicht fürs Büro.</h2>
+      <ul class="liste">
+        <li><h3>Aufgaben in sieben Sprachen</h3><p>Du schreibst auf Deutsch, die Übersetzung steht darunter: Albanisch, Rumänisch, Türkisch, Polnisch, Englisch, Griechisch, Bulgarisch. Deine Schrift bleibt immer die größte.</p></li>
+        <li><h3>Rückmeldung per WhatsApp</h3><p>Dein Team muss nichts Neues lernen. Ein Tipp auf den Zettel, und „erledigt“ kommt in deinem Chat an.</p></li>
+        <li><h3>Bautagebuch und Belege</h3><p>Fotos, Protokolle und Barauslagen gehören zur Baustelle und bleiben dort. Auch erledigte Aufgaben sind Jahre später noch auffindbar.</p></li>
+        <li><h3>Tägliche Sicherung</h3><p>Alles wird automatisch gesichert. Fertige Baustellen schließt du ab und legst sie als ZIP ab, zum Beispiel als Nachweis.</p></li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="h-start">
+      <h2 id="h-start">Vom Kauf bis zur ersten Aufgabe in einer Pause.</h2>
+      <ol class="schritte">
+        <li><b>1</b><h3>Kaufen</h3><p>Sicher bezahlen mit PayPal.</p></li>
+        <li><b>2</b><h3>Installieren</h3><p>Ein Knopf legt BauPilot auf den Startbildschirm, auf iPhone und Android.</p></li>
+        <li><b>3</b><h3>Loslegen</h3><p>Baustelle anlegen, Kollegen einladen, erste Aufgabe verschicken.</p></li>
+      </ol>
+    </section>
+
+    <section id="preis" aria-labelledby="h-preis">
+      <div class="preis">
+        <div>
+          <h2 id="h-preis">Ein Preis für den ganzen Betrieb.</h2>
+          <p class="lead">Keine Staffel nach Nutzern, keine Einrichtungsgebühr. Du kannst jeden Monat kündigen.</p>
+        </div>
+        <div class="kasten">
+          <p class="zahl" id="preis-zahl">Preis folgt</p>
+          <p class="einheit" id="preis-einheit"></p>
+          <ul>
+            <li>Alle Baustellen und Mitarbeiter</li>
+            <li>Aufgaben in sieben Sprachen</li>
+            <li>WhatsApp-Rückmeldung</li>
+            <li>Tägliche Sicherung</li>
+          </ul>
+          <button class="btn gelb" id="kaufen" type="button">Jetzt kaufen</button>
+          <p id="kauf-meldung" role="status"></p>
+          <p class="hinweis" id="preis-hinweis"></p>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="h-fragen">
+      <h2 id="h-fragen">Fragen vor dem Kauf</h2>
+      <details><summary>Brauche ich einen App-Store?</summary><p>Nein. BauPilot wird direkt aus dem Browser auf den Startbildschirm gelegt und startet danach wie jede andere App.</p></details>
+      <details><summary>Läuft es auf iPhone und Android?</summary><p>Ja. Auf Android installiert ein Fingertipp, auf dem iPhone führt dich eine kurze Anleitung in drei Schritten.</p></details>
+      <details><summary>Was passiert mit meinen Daten?</summary><p>Deine Baustellendaten gehören dir. Sie werden täglich gesichert und lassen sich jederzeit als ZIP exportieren.</p></details>
+      <details><summary>Kann ich kündigen?</summary><p>Ja, jeden Monat. Deine Daten kannst du vorher als ZIP herunterladen.</p></details>
+    </section>
+  </main>
+
+  <footer>
+    <span>© BauPilot, Dieterle eGbR, Schiltach</span>
+    <nav><a href="impressum.html">Impressum</a><a href="datenschutz.html">Datenschutz</a></nav>
+  </footer>
+</div>
+<script src="site.config.js"></script>
 <script>
+  (function () {
+    var S = window.SITE || {};
+    var z = document.getElementById('preis-zahl');
+    if (S.price) { z.textContent = S.price; document.getElementById('preis-einheit').textContent = S.priceUnit || ''; document.getElementById('preis-hinweis').textContent = S.priceNote || ''; }
+    document.getElementById('kaufen').addEventListener('click', function () {
+      if (S.paypalLink) { location.href = S.paypalLink; return; }
+      document.getElementById('kauf-meldung').textContent = 'Der Verkauf startet in Kürze.';
+    });
+  })();
   if ('serviceWorker' in navigator) addEventListener('load', function () { navigator.serviceWorker.register('sw.js'); });
 </script>
 </body>

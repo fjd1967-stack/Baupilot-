@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Danke für deinen Kauf – BauPilot</title>
+<meta name="robots" content="noindex">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="theme-color" content="#ffc20e">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=Barlow:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="top"><a class="logo" href="./"><i></i>BauPilot</a></header>
+  <main class="danke">
+    <h1>Danke. Jetzt kommt BauPilot auf dein Handy.</h1>
+    <p class="lead">Öffne diese Seite auf dem Handy, auf dem du BauPilot nutzen willst, und tippe auf den Knopf.</p>
+    <button class="btn gelb" data-install type="button">BauPilot installieren</button>
+    <p class="hinweis" id="schon" hidden>BauPilot ist schon installiert. Du findest es auf deinem Startbildschirm.</p>
+    <div style="margin-top:40px">
+      <div class="schritt"><b>1</b><div><strong>Auf dem iPhone in Safari öffnen</strong><br>Aus WhatsApp oder Mail heraus geht die Installation nicht. Der Knopf zeigt dir dann, wie du den Link in Safari öffnest.</div></div>
+      <div class="schritt"><b>2</b><div><strong>Auf Android in Chrome öffnen</strong><br>Ein Fingertipp auf den Knopf, dann „Installieren“.</div></div>
+      <div class="schritt"><b>3</b><div><strong>Kollegen einladen</strong><br>Schick ihnen den Link zur App. Sie installieren sie auf die gleiche Weise.</div></div>
+    </div>
+    <p style="margin-top:32px"><a class="btn klein" href="app.html">BauPilot im Browser öffnen</a></p>
+  </main>
+</div>
+<script src="install.js" data-app-name="BauPilot" data-color="#2c4a63" defer></script>
+<script>
+  if ('serviceWorker' in navigator) addEventListener('load', function () { navigator.serviceWorker.register('sw.js'); });
+  addEventListener('load', function () { if (window.AppInstall && AppInstall.isStandalone()) document.getElementById('schon').hidden = false; });
+</script>
+</body>
+</html>
