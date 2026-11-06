@@ -1,6 +1,6 @@
 :root{
   --beton:#e5e6e2; --weiss:#fbfbf9; --tinte:#16191d; --signal:#ffc20e; --stahl:#2c4a63; --grau:#5b616a; --linie:#c9cbc5;
-  --kopf:"Barlow Condensed","Arial Narrow",Impact,sans-serif; --text:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --kopf:"Barlow Condensed","Arial Narrow","Liberation Sans Narrow",sans-serif; --text:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -91,7 +91,7 @@ footer nav{display:flex;gap:22px}
 .danke .schritt{display:flex;gap:16px;padding:18px 0;border-top:1px solid var(--linie)}
 .danke .schritt b{flex:none;font:600 40px/1 var(--kopf);color:var(--stahl);width:1.2em}
 
-@media (max-width:860px){
+@media (max-width:760px){
   body{font-size:17px}
   .hero{grid-template-columns:1fr;gap:40px;padding:28px 0 64px}
   .liste,.preis{grid-template-columns:1fr;gap:0}
