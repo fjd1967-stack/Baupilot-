@@ -4,12 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Datenschutz – BauPilot</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=Barlow:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="wrap">
-  <header class="top"><a class="logo" href="./"><i></i>BauPilot</a></header>
+  <header class="top"><a class="logo" href="./"><i></i><span data-name>BauPilot</span></a></header>
   <main class="seite">
     <h1>Datenschutz</h1>
     <p><span class="platz">Entwurf: vor dem Verkauf von einem Rechtsanwalt oder Datenschutz-Generator prüfen lassen.</span></p>
@@ -23,5 +22,7 @@
     <p>Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit und Widerspruch sowie auf Beschwerde bei einer Aufsichtsbehörde.</p>
   </main>
 </div>
+<script src="site.config.js"></script>
+<script>(function(){var n=(window.SITE||{}).name;if(!n)return;var e=document.querySelectorAll("[data-name]");for(var i=0;i<e.length;i++)e[i].textContent=n;document.title=document.title.replace(/BauPilot/g,n);})();</script>
 </body>
 </html>

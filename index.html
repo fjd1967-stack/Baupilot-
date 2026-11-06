@@ -7,104 +7,171 @@
 <meta name="description" content="Aufgaben, Bautagebuch und Belege auf dem Handy. Aufgaben in sieben Sprachen, Rückmeldung per WhatsApp. Ohne App-Store, in zwei Minuten installiert.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<meta name="theme-color" content="#ffc20e">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=Barlow:wght@400;500;600&display=swap">
+<meta name="theme-color" content="#ff5a14">
+<link rel="preload" href="fonts/InterDisplay-Black.woff" as="font" type="font/woff" crossorigin>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="wrap">
-  <header class="top">
-    <a class="logo" href="./"><i></i>BauPilot</a>
-    <a class="btn gelb klein" href="#preis" data-buy-link>Jetzt kaufen</a>
-  </header>
 
-  <main>
-    <div class="hero">
-      <div>
-        <h1>Jeder auf der Baustelle weiß, was heute dran ist.</h1>
-        <p class="lead">Aufgaben, Bautagebuch und Belege auf dem Handy. Die Aufgabe kommt in der Sprache an, die dein Mitarbeiter versteht, und die Rückmeldung läuft über WhatsApp.</p>
-        <a class="btn gelb" href="#preis" data-buy-link>BauPilot kaufen</a>
-        <p class="sub">Kein App-Store. Nach dem Kauf in zwei Minuten auf dem Startbildschirm.</p>
-      </div>
-
-      <article class="zettel" aria-label="Beispiel einer Aufgabe in BauPilot">
-        <div class="kopf"><span>AUFGABE 14</span><span>Heute</span></div>
-        <div class="inhalt">
-          <p class="de">Betonschnitte um das Becken fertigstellen</p>
-          <p class="ort">Baustelle Pforzheim, Becken 2</p>
-          <div class="uebers"><b>RO</b><span>Finalizați tăierile de beton în jurul bazinului</span></div>
-          <div class="uebers"><b>TR</b><span>Havuzun etrafındaki beton kesimlerini tamamlayın</span></div>
-          <div class="uebers"><b>PL</b><span>Dokończyć cięcia betonu wokół basenu</span></div>
-        </div>
-        <div class="fuss">
-          <a class="erledigt" href="#preis">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
-            ERLEDIGT per WhatsApp melden
-          </a>
-        </div>
-      </article>
+<header class="hero">
+  <div class="wrap">
+    <div class="top">
+      <a class="logo" href="./"><i></i><span data-name>BauPilot</span></a>
+      <a class="btn klein" href="#preis" data-buy-link>Jetzt kaufen</a>
     </div>
 
-    <section aria-labelledby="h-kann">
-      <h2 id="h-kann">Gebaut für Poliere und Bauleiter, nicht fürs Büro.</h2>
-      <ul class="liste">
-        <li><h3>Aufgaben in sieben Sprachen</h3><p>Du schreibst auf Deutsch, die Übersetzung steht darunter: Albanisch, Rumänisch, Türkisch, Polnisch, Englisch, Griechisch, Bulgarisch. Deine Schrift bleibt immer die größte.</p></li>
-        <li><h3>Rückmeldung per WhatsApp</h3><p>Dein Team muss nichts Neues lernen. Ein Tipp auf den Zettel, und „erledigt“ kommt in deinem Chat an.</p></li>
-        <li><h3>Bautagebuch und Belege</h3><p>Fotos, Protokolle und Barauslagen gehören zur Baustelle und bleiben dort. Auch erledigte Aufgaben sind Jahre später noch auffindbar.</p></li>
-        <li><h3>Tägliche Sicherung</h3><p>Alles wird automatisch gesichert. Fertige Baustellen schließt du ab und legst sie als ZIP ab, zum Beispiel als Nachweis.</p></li>
-      </ul>
-    </section>
+    <div class="hero-grid">
+      <div class="hero-text">
+        <h1>Jeder weiß, was heute dran ist.</h1>
+        <p class="lead">Du schreibst die Aufgabe auf Deutsch. Dein Team liest sie in seiner Sprache und meldet per WhatsApp: erledigt.</p>
+        <p style="margin:30px 0 0"><a class="btn gross" href="#preis" data-buy-link><span data-name>BauPilot</span> kaufen</a></p>
+        <p class="sub">Ohne App-Store. In zwei Minuten auf dem Startbildschirm.</p>
+      </div>
 
-    <section aria-labelledby="h-start">
-      <h2 id="h-start">Vom Kauf bis zur ersten Aufgabe in einer Pause.</h2>
-      <ol class="schritte">
-        <li><b>1</b><h3>Kaufen</h3><p>Sicher bezahlen mit PayPal.</p></li>
-        <li><b>2</b><h3>Installieren</h3><p>Ein Knopf legt BauPilot auf den Startbildschirm, auf iPhone und Android.</p></li>
-        <li><b>3</b><h3>Loslegen</h3><p>Baustelle anlegen, Kollegen einladen, erste Aufgabe verschicken.</p></li>
-      </ol>
-    </section>
-
-    <section id="preis" aria-labelledby="h-preis">
-      <div class="preis">
-        <div>
-          <h2 id="h-preis">Ein Preis für dein ganzes Team.</h2>
-          <p class="lead">Fünf Nutzer sind im Preis enthalten, jeder weitere kostet 9,90 € im Monat. Keine Einrichtungsgebühr, jeden Monat kündbar.</p>
-        </div>
-        <div class="kasten">
-          <p class="zahl" id="preis-zahl">Preis folgt</p>
-          <p class="einheit" id="preis-einheit"></p>
-          <ul>
-            <li>Bis zu 5 Nutzer, unbegrenzt viele Baustellen</li>
-            <li>Aufgaben in sieben Sprachen</li>
-            <li>WhatsApp-Rückmeldung</li>
-            <li>Tägliche Sicherung</li>
-          </ul>
-          <button class="btn gelb" id="kaufen" type="button">Jetzt kaufen</button>
-          <p id="kauf-meldung" role="status"></p>
-          <p class="hinweis" id="preis-hinweis"></p>
+      <div class="phone-spalte">
+        <p class="hinweis-demo">Probier es aus: Sprache antippen, dann Erledigt.</p>
+        <div class="phone" role="group" aria-label="Bedienbare Vorschau der App">
+          <div class="screen" id="screen">
+            <div class="view view-task" id="view-task">
+              <div class="app-kopf"><span data-name>BauPilot</span><span class="heute">Heute</span></div>
+              <p class="task-meta">Aufgabe 14, Baustelle Becken 2</p>
+              <p class="task-de" lang="de">Betonschnitte um das Becken fertigstellen</p>
+              <div class="task-tr" id="tr"><p id="tr-text" lang="ro"><span class="sprache" id="tr-sprache">Rumänisch</span><span id="tr-satz">Finalizați tăierile de beton în jurul bazinului</span></p></div>
+              <div class="chips" id="chips" role="group" aria-label="Sprache wählen"></div>
+              <button class="erledigt" id="erledigt" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12.5l5 5L19.5 7"/></svg>
+                ERLEDIGT
+              </button>
+            </div>
+            <div class="view view-chat" id="view-chat" aria-hidden="true">
+              <div class="chat-kopf">Baustelle Becken 2<small>WhatsApp-Gruppe</small></div>
+              <div class="chat-feld" role="status">
+                <div class="blase aus"><b>Erledigt:</b> Betonschnitte um das Becken fertigstellen<time id="zeit">06:43 ✓✓</time></div>
+                <div class="blase">Danke, dann morgen die Kernbohrung.<time>06:44</time></div>
+              </div>
+              <button class="nochmal" id="nochmal" type="button" tabindex="-1">Nochmal von vorn</button>
+            </div>
+          </div>
         </div>
       </div>
-    </section>
+    </div>
+  </div>
+  <div class="warn" aria-hidden="true"></div>
+</header>
 
-    <section aria-labelledby="h-fragen">
+<main>
+  <section class="band band--blau band--sprachen dunkel nach-hero" aria-labelledby="h-sprachen">
+    <div class="wrap">
+      <div class="sprachen-kopf">
+        <h2 id="h-sprachen">Du schreibst Deutsch. Dein Team liest seine Sprache.</h2>
+        <p class="lead">Deine Schrift bleibt immer die größte. Die Übersetzung steht darunter, in sieben Sprachen, ohne dass du etwas einstellst.</p>
+      </div>
+      <ul class="satz">
+        <li class="de"><span class="sp">Deutsch</span><span class="tx" lang="de">Betonschnitte um das Becken fertigstellen</span></li>
+        <li><span class="sp">Albanisch</span><span class="tx" lang="sq">Përfundoni prerjet e betonit rreth pellgut</span></li>
+        <li><span class="sp">Rumänisch</span><span class="tx" lang="ro">Finalizați tăierile de beton în jurul bazinului</span></li>
+        <li><span class="sp">Türkisch</span><span class="tx" lang="tr">Havuzun etrafındaki beton kesimlerini tamamlayın</span></li>
+        <li><span class="sp">Polnisch</span><span class="tx" lang="pl">Dokończyć cięcia betonu wokół basenu</span></li>
+        <li><span class="sp">Englisch</span><span class="tx" lang="en">Finish the concrete cuts around the pool</span></li>
+        <li><span class="sp">Griechisch</span><span class="tx" lang="el">Ολοκληρώστε τις κοπές σκυροδέματος γύρω από την πισίνα</span></li>
+        <li><span class="sp">Bulgarisch</span><span class="tx" lang="bg">Завършете изрязването на бетона около басейна</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="band band--papier" aria-labelledby="h-wa">
+    <div class="wrap zwei">
+      <div>
+        <h2 id="h-wa">Ein Tipp, und es steht in deinem Chat.</h2>
+        <p class="lead">Dein Team muss nichts Neues lernen. Wer fertig ist, tippt auf Erledigt. Die Meldung kommt per WhatsApp bei dir an, mit Uhrzeit.</p>
+      </div>
+      <ul class="chatliste" aria-label="Beispiel: Rückmeldungen von heute">
+        <li><span class="was">Erledigt: Betonschnitte Becken 2</span><time>06:43</time><span class="wer">Nikola <span class="haken">✓✓</span></span></li>
+        <li><span class="was">Erledigt: Kernbohrung Achse C</span><time>09:12</time><span class="wer">Mehmet <span class="haken">✓✓</span></span></li>
+        <li><span class="was">Erledigt: Container leer gemeldet</span><time>11:30</time><span class="wer">Andrei <span class="haken">✓✓</span></span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="band band--beton" aria-labelledby="h-tb">
+    <div class="wrap">
+      <div class="zwei" style="margin-bottom:clamp(32px,5vw,56px)">
+        <h2 id="h-tb">Was heute passiert ist, steht heute im Tagebuch.</h2>
+        <p class="lead">Fotos, Protokolle und Barauslagen bleiben bei der Baustelle. Auch erledigte Aufgaben findest du nach Jahren noch.</p>
+      </div>
+      <ol class="tagebuch" aria-label="Beispiel für einen Tag im Bautagebuch">
+        <li><time>06:43</time><span class="eintrag">Betonschnitte Becken 2 erledigt</span><span class="art">Aufgabe</span></li>
+        <li><time>08:05</time><span class="eintrag">Vier Fotos Nordwand vor dem Abbruch</span><span class="art">Bautagebuch</span></li>
+        <li><time>10:20</time><span class="eintrag">Diamantseil, Ersatz bar bezahlt <span class="betrag">148,20 €</span></span><span class="art">Beleg</span></li>
+        <li class="sicher"><time>02:00</time><span class="eintrag">Alles gesichert<small>Jede Nacht automatisch. Fertige Baustellen schließt du ab und legst sie als ZIP ab, zum Beispiel als Nachweis.</small></span><span class="art">Sicherung</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="band band--gelb" aria-labelledby="h-start">
+    <div class="wrap">
+      <h2 id="h-start" style="max-width:12em">Vom Kauf bis zur ersten Aufgabe in einer Pause.</h2>
+      <ol class="schritte">
+        <li><span class="nr" aria-hidden="true">1</span><h3>Kaufen</h3><p>Sicher bezahlen mit PayPal.</p></li>
+        <li><span class="nr" aria-hidden="true">2</span><h3>Installieren</h3><p>Ein Knopf legt <span data-name>BauPilot</span> auf den Startbildschirm, auf iPhone und Android.</p></li>
+        <li><span class="nr" aria-hidden="true">3</span><h3>Loslegen</h3><p>Baustelle anlegen, Kollegen einladen, erste Aufgabe verschicken.</p></li>
+      </ol>
+      <p class="start-fuss">Kein App-Store, kein IT-Betreuer. Die Installation läuft direkt aus dem Browser.</p>
+    </div>
+  </section>
+
+  <section class="band band--orange" id="preis" aria-labelledby="h-preis">
+    <div class="wrap preis">
+      <div>
+        <h2 id="h-preis">Ein Preis für dein ganzes Team.</h2>
+        <p class="lead">Fünf Nutzer sind im Preis enthalten, jeder weitere kostet 9,90 € im Monat. Keine Einrichtungsgebühr, jeden Monat kündbar.</p>
+      </div>
+      <div>
+        <p class="preis-zahl" id="preis-zahl">Preis folgt</p>
+        <p class="preis-einheit" id="preis-einheit"></p>
+        <ul>
+          <li>Bis zu 5 Nutzer, unbegrenzt viele Baustellen</li>
+          <li>Aufgaben in sieben Sprachen</li>
+          <li>Rückmeldung per WhatsApp</li>
+          <li>Bautagebuch, Belege und tägliche Sicherung</li>
+        </ul>
+        <button class="btn gross" id="kaufen" type="button">Jetzt kaufen</button>
+        <p id="kauf-meldung" role="status"></p>
+        <p class="hinweis" id="preis-hinweis"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band--papier" aria-labelledby="h-fragen">
+    <div class="wrap">
       <h2 id="h-fragen">Fragen vor dem Kauf</h2>
-      <details><summary>Brauche ich einen App-Store?</summary><p>Nein. BauPilot wird direkt aus dem Browser auf den Startbildschirm gelegt und startet danach wie jede andere App.</p></details>
-      <details><summary>Läuft es auf iPhone und Android?</summary><p>Ja. Auf Android installiert ein Fingertipp, auf dem iPhone führt dich eine kurze Anleitung in drei Schritten.</p></details>
-      <details><summary>Was passiert mit meinen Daten?</summary><p>Deine Baustellendaten gehören dir. Sie werden täglich gesichert und lassen sich jederzeit als ZIP exportieren.</p></details>
-      <details><summary>Kann ich kündigen?</summary><p>Ja, jeden Monat. Deine Daten kannst du vorher als ZIP herunterladen.</p></details>
-    </section>
-  </main>
+      <div class="fragen">
+        <details><summary>Brauche ich einen App-Store?</summary><p>Nein. <span data-name>BauPilot</span> wird direkt aus dem Browser auf den Startbildschirm gelegt und startet danach wie jede andere App.</p></details>
+        <details><summary>Läuft es auf iPhone und Android?</summary><p>Ja. Auf Android installiert ein Fingertipp, auf dem iPhone führt dich eine kurze Anleitung in drei Schritten.</p></details>
+        <details><summary>Was passiert mit meinen Daten?</summary><p>Deine Baustellendaten gehören dir. Sie werden täglich gesichert und lassen sich jederzeit als ZIP exportieren.</p></details>
+        <details><summary>Kann ich kündigen?</summary><p>Ja, jeden Monat. Deine Daten kannst du vorher als ZIP herunterladen.</p></details>
+      </div>
+    </div>
+  </section>
+</main>
 
-  <footer>
-    <span>© BauPilot, Dieterle eGbR, Schiltach</span>
+<footer class="dunkel">
+  <div class="wrap">
+    <span>© <span data-name>BauPilot</span>, Dieterle eGbR, Schiltach</span>
     <nav><a href="impressum.html">Impressum</a><a href="datenschutz.html">Datenschutz</a></nav>
-  </footer>
-</div>
+  </div>
+</footer>
+
 <script src="site.config.js"></script>
 <script>
   (function () {
     var S = window.SITE || {};
+    // Name zentral aus site.config.js (z. B. später "OrdoBau")
+    if (S.name) {
+      var n = document.querySelectorAll('[data-name]');
+      for (var i = 0; i < n.length; i++) n[i].textContent = S.name;
+      document.title = S.name + ' – Die Baustellen-App für Poliere und Bauleiter';
+    }
     var z = document.getElementById('preis-zahl');
     if (S.price) { z.textContent = S.price; document.getElementById('preis-einheit').textContent = S.priceUnit || ''; document.getElementById('preis-hinweis').textContent = S.priceNote || ''; }
     document.getElementById('kaufen').addEventListener('click', function () {
@@ -114,5 +181,6 @@
   })();
   if ('serviceWorker' in navigator) addEventListener('load', function () { navigator.serviceWorker.register('sw.js'); });
 </script>
+<script src="demo.js"></script>
 </body>
 </html>

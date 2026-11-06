@@ -7,16 +7,15 @@
 <meta name="robots" content="noindex">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<meta name="theme-color" content="#ffc20e">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=Barlow:wght@400;500;600&display=swap">
+<meta name="theme-color" content="#ff5a14">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="wrap">
-  <header class="top"><a class="logo" href="./"><i></i>BauPilot</a></header>
+  <header class="top"><a class="logo" href="./"><i></i><span data-name>BauPilot</span></a></header>
   <main class="danke">
-    <h1>Danke. Jetzt kommt BauPilot auf dein Handy.</h1>
-    <p class="lead">Öffne diese Seite auf dem Handy, auf dem du BauPilot nutzen willst, und tippe auf den Knopf.</p>
+    <h1>Danke. Jetzt kommt <span data-name>BauPilot</span> auf dein Handy.</h1>
+    <p class="lead">Öffne diese Seite auf dem Handy, auf dem du <span data-name>BauPilot</span> nutzen willst, und tippe auf den Knopf.</p>
     <button class="btn gelb" data-install type="button">BauPilot installieren</button>
     <p class="hinweis" id="schon" hidden>BauPilot ist schon installiert. Du findest es auf deinem Startbildschirm.</p>
     <div style="margin-top:40px">
@@ -27,7 +26,9 @@
     <p style="margin-top:32px"><a class="btn klein" href="app.html">BauPilot im Browser öffnen</a></p>
   </main>
 </div>
-<script src="install.js" data-app-name="BauPilot" data-color="#2c4a63" defer></script>
+<script src="site.config.js"></script>
+<script>(function(){var n=(window.SITE||{}).name;if(!n)return;var e=document.querySelectorAll("[data-name]");for(var i=0;i<e.length;i++)e[i].textContent=n;document.title=document.title.replace(/BauPilot/g,n);})();</script>
+<script src="install.js" data-app-name="BauPilot" data-color="#0f2238" defer></script>
 <script>
   if ('serviceWorker' in navigator) addEventListener('load', function () { navigator.serviceWorker.register('sw.js'); });
   addEventListener('load', function () { if (window.AppInstall && AppInstall.isStandalone()) document.getElementById('schon').hidden = false; });
