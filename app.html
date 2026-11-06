@@ -9,17 +9,99 @@
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <meta name="theme-color" content="#ff5a14">
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="profil.css">
 </head>
 <body>
 <div class="wrap">
   <header class="top"><a class="logo" href="./"><i></i><span data-name>BauPilot</span></a></header>
-  <main class="danke">
-    <h1>Deine App wird freigeschaltet.</h1>
-    <p class="lead">Hier startet später <span data-name>BauPilot</span>. Die Installation hat schon geklappt, die App selbst zieht in Kürze auf diese Adresse um.</p>
+
+  <main class="profil">
+    <!-- Ansicht 1: Daten eingeben -->
+    <section id="ansicht-form" hidden>
+      <h1 id="form-titel">Wer bist du?</h1>
+      <p class="lead">Trag deine Daten einmal ein. <span data-name>BauPilot</span> nutzt sie für deine Aufgaben, Berichte und Belege.</p>
+
+      <form id="profil-form" novalidate autocomplete="on">
+        <div class="zeile">
+          <div class="feld">
+            <label for="vorname">Vorname</label>
+            <input id="vorname" name="vorname" type="text" autocomplete="given-name" required aria-describedby="e-vorname">
+            <p class="fehler" id="e-vorname" role="alert"></p>
+          </div>
+          <div class="feld">
+            <label for="nachname">Nachname</label>
+            <input id="nachname" name="nachname" type="text" autocomplete="family-name" required aria-describedby="e-nachname">
+            <p class="fehler" id="e-nachname" role="alert"></p>
+          </div>
+        </div>
+
+        <div class="feld">
+          <label for="firma">Firma</label>
+          <input id="firma" name="firma" type="text" autocomplete="organization" required aria-describedby="e-firma">
+          <p class="fehler" id="e-firma" role="alert"></p>
+        </div>
+
+        <div class="feld">
+          <label for="funktion">Funktion in der Firma</label>
+          <input id="funktion" name="funktion" type="text" list="funktionen" autocomplete="organization-title" required aria-describedby="h-funktion e-funktion">
+          <datalist id="funktionen">
+            <option value="Geschäftsführer"><option value="Bauleiter"><option value="Polier"><option value="Vorarbeiter">
+            <option value="Kolonnenführer"><option value="Kalkulator"><option value="Büro und Verwaltung"><option value="Bauarbeiter">
+          </datalist>
+          <p class="hilfe" id="h-funktion">Wähle einen Vorschlag oder schreib deine eigene Bezeichnung.</p>
+          <p class="fehler" id="e-funktion" role="alert"></p>
+        </div>
+
+        <div class="feld">
+          <label for="geburt">Geburtsdatum</label>
+          <input id="geburt" name="geburt" type="date" autocomplete="bday" required aria-describedby="e-geburt">
+          <p class="fehler" id="e-geburt" role="alert"></p>
+        </div>
+
+        <div class="feld">
+          <label for="handy">Handynummer</label>
+          <input id="handy" name="handy" type="tel" inputmode="tel" autocomplete="tel" placeholder="+49 171 1234567" required aria-describedby="h-handy e-handy">
+          <p class="hilfe" id="h-handy">Auch für die Rückmeldung per WhatsApp.</p>
+          <p class="fehler" id="e-handy" role="alert"></p>
+        </div>
+
+        <div class="feld">
+          <label for="email">E-Mail</label>
+          <input id="email" name="email" type="email" inputmode="email" autocomplete="email" required aria-describedby="e-email">
+          <p class="fehler" id="e-email" role="alert"></p>
+        </div>
+
+        <div class="feld einwilligung">
+          <input id="zustimmung" name="zustimmung" type="checkbox" required aria-describedby="e-zustimmung">
+          <label for="zustimmung">Ich bin einverstanden, dass meine Angaben für die Nutzung von <span data-name>BauPilot</span> gespeichert werden. Mehr in der <a href="datenschutz.html">Datenschutzerklärung</a>.</label>
+          <p class="fehler" id="e-zustimmung" role="alert"></p>
+        </div>
+
+        <p class="hilfe">Deine Angaben bleiben vorerst nur auf diesem Gerät gespeichert.</p>
+        <div class="knoepfe">
+          <button class="btn gelb gross" type="submit" id="speichern">Speichern und loslegen</button>
+          <button class="btn klein ghost" type="button" id="abbrechen" hidden>Abbrechen</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Ansicht 2: Profil anzeigen -->
+    <section id="ansicht-profil" hidden>
+      <h1 id="gruss">Hallo.</h1>
+      <p class="lead">Deine Angaben sind gespeichert. Die App selbst zieht in Kürze auf diese Adresse um.</p>
+      <dl class="daten" id="daten"></dl>
+      <div class="knoepfe">
+        <button class="btn gross" type="button" id="bearbeiten">Angaben ändern</button>
+        <button class="btn klein ghost" type="button" id="loeschen">Meine Daten löschen</button>
+      </div>
+      <p class="hilfe" id="meldung" role="status"></p>
+    </section>
   </main>
 </div>
-<script>if ('serviceWorker' in navigator) addEventListener('load', function () { navigator.serviceWorker.register('sw.js'); });</script>
+
 <script src="site.config.js"></script>
+<script src="profil.js"></script>
+<script>if ('serviceWorker' in navigator) addEventListener('load', function () { navigator.serviceWorker.register('sw.js'); });</script>
 <script>(function(){var n=(window.SITE||{}).name;if(!n)return;var e=document.querySelectorAll("[data-name]");for(var i=0;i<e.length;i++)e[i].textContent=n;document.title=document.title.replace(/BauPilot/g,n);})();</script>
 </body>
 </html>

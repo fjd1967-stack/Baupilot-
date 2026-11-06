@@ -1,0 +1,31 @@
+.profil{padding:24px 0 96px;max-width:640px}
+.profil h1{font:900 clamp(36px,7vw,56px)/1 var(--kopf);letter-spacing:-.03em;margin:0 0 14px}
+.profil .lead{margin:0 0 28px;color:var(--grau);max-width:34em}
+.zeile{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+.feld{margin:0 0 20px}
+.feld label{display:block;font:700 16px/1.3 var(--text);margin:0 0 6px}
+.feld input[type=text],.feld input[type=tel],.feld input[type=email],.feld input[type=date]{
+  width:100%;min-height:56px;padding:0 16px;font:400 18px/1.2 var(--text);color:var(--blau);background:#fff;
+  border:2px solid var(--blau);border-radius:8px;appearance:none;-webkit-appearance:none}
+.feld input[type=date]{min-width:0;text-align:left}
+.feld input:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+.feld input[aria-invalid=true]{border-color:#c4210f;background:#fff4f2}
+.hilfe{margin:6px 0 0;font-size:15px;color:var(--grau)}
+.fehler{margin:6px 0 0;font:700 15px/1.3 var(--text);color:#b01e0d;min-height:0}
+.fehler:empty{display:none}
+.einwilligung{display:grid;grid-template-columns:28px 1fr;gap:4px 12px;align-items:start}
+.einwilligung input{width:28px;height:28px;margin:2px 0 0;accent-color:var(--blau)}
+.einwilligung label{font-weight:400;margin:0}
+.einwilligung .fehler{grid-column:2}
+.knoepfe{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:24px}
+.btn.ghost{background:transparent;color:var(--blau);box-shadow:inset 0 0 0 2px var(--blau)}
+.btn.ghost:hover{background:#e9e8e2}
+.daten{margin:0 0 8px;border-top:2px solid var(--blau)}
+.daten div{display:grid;grid-template-columns:9.5em 1fr;gap:12px;padding:14px 0;border-bottom:1px solid #cfcfc8}
+.daten dt{font-weight:700}
+.daten dd{margin:0;overflow-wrap:anywhere}
+@media (max-width:520px){
+  .zeile{grid-template-columns:1fr}
+  .daten div{grid-template-columns:1fr;gap:2px}
+  .btn.gross{width:100%}
+}
