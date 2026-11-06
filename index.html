@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>BauPilot</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="theme-color" content="#c2410c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="BauPilot">
+<style>
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#fff;color:#111;display:flex;min-height:100vh;align-items:center;justify-content:center;text-align:center;padding:24px;box-sizing:border-box}
+  .card{max-width:420px}
+  img{width:96px;height:96px;border-radius:22px}
+  h1{margin:16px 0 6px;font-size:28px}
+  p{color:#555;font-size:17px;line-height:1.45;margin:0 0 24px}
+  [data-install]{background:#c2410c;color:#fff;border:0;border-radius:14px;padding:16px 28px;font-size:18px;font-weight:600;cursor:pointer}
+  [data-install][hidden]{display:none}
+  .open{display:inline-block;margin-top:14px;color:#c2410c;font-size:16px}
+  @media (prefers-color-scheme:dark){body{background:#111;color:#f2f2f2}p{color:#aaa}}
+</style>
+</head>
+<body>
+<main class="card">
+  <img src="icons/icon-192.png" alt="">
+  <h1>BauPilot</h1>
+  <p>Die Baustellen-App für Poliere und Bauleiter. Installiere sie auf deinem Handy, dann startet sie wie jede andere App.</p>
+  <button data-install>App installieren</button>
+  <div><a class="open" href="app.html">App direkt im Browser öffnen</a></div>
+</main>
+<script src="install.js" data-app-name="BauPilot" data-color="#c2410c" defer></script>
+<script>
+  if ('serviceWorker' in navigator) addEventListener('load', function () { navigator.serviceWorker.register('sw.js'); });
+</script>
+</body>
+</html>

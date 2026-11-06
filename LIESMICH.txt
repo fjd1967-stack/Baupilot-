@@ -1,0 +1,20 @@
+INSTALLATIONSKNOPF FÜR iPHONE UND ANDROID
+
+Inhalt
+- install.js              Der Knopf (ohne Abhängigkeiten). Einbinden: <script src="install.js" defer></script>
+- index.html              Startseite mit Knopf "App installieren"
+- manifest.webmanifest    Name, Symbole, Farben der App
+- sw.js                   Service Worker (macht die App installierbar, Start auch bei schwachem Netz)
+- icons/                  App-Symbole (Platzhalter, später durch das Logo ersetzen)
+
+Was der Knopf je nach Handy macht
+- Android (Chrome/Edge): echter Installationsdialog per Knopfdruck.
+- iPhone: Schritt-für-Schritt-Anleitung (Teilen, Zum Home-Bildschirm, Hinzufügen). Apple erlaubt keinen Direktbefehl.
+- In WhatsApp/Claude/Facebook geöffnet: Hinweis "im Browser öffnen" mit Knopf "Link kopieren".
+- Schon installiert: Knopf verschwindet.
+
+Voraussetzung zum Betrieb
+- Die Dateien müssen auf einer eigenen Adresse mit https liegen (z. B. GitHub Pages oder ein Webspace).
+- In einem claude.ai-Artifact kann die echte Installation nicht laufen, weil dort kein eigenes Manifest und kein Service Worker möglich sind.
+- Name, Farbe: in manifest.webmanifest und im script-Tag (data-app-name, data-color) ändern.
+- Wenn die App umbenannt wird (z. B. OrdoBau): name/short_name im Manifest und apple-mobile-web-app-title ändern.
