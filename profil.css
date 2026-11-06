@@ -29,3 +29,29 @@
   .daten div{grid-template-columns:1fr;gap:2px}
   .btn.gross{width:100%}
 }
+
+/* Tabs */
+.tabs{display:flex;gap:6px;max-width:560px;margin:0 auto 8px;padding:0 20px}
+.tabs[hidden]{display:none}
+.tabs button{flex:1;min-height:44px;border:2px solid var(--rand);background:#fff;color:var(--text);font:600 15px/1 Inter,system-ui,sans-serif;border-radius:12px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--blau);color:#fff;border-color:var(--blau)}
+.tabs button:focus-visible{outline:3px solid var(--fokus);outline-offset:2px}
+.tab[hidden]{display:none}
+select{width:100%;min-height:48px;padding:0 12px;border:2px solid var(--rand);border-radius:12px;background:#fff;font:inherit;color:var(--text)}
+.optional{font-weight:400;color:var(--grau);font-size:.85em}
+.gruppe{font-size:1.05rem;margin:28px 0 12px}
+.zeile.plz{display:grid;grid-template-columns:110px 1fr;gap:12px}
+.logo-zeile{display:flex;gap:16px;align-items:center;margin-bottom:16px}
+.logo-vorschau{width:96px;height:96px;border:2px dashed var(--rand);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--grau);background:#fff;overflow:hidden;text-align:center}
+.logo-vorschau img{max-width:100%;max-height:100%}
+.versteckt{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}
+.versteckt:focus-visible+*,label:has(+ .versteckt:focus-visible){outline:3px solid var(--fokus);outline-offset:2px}
+.upload{margin:16px 0}
+.ablage{border:2px dashed var(--rand);border-radius:16px;padding:20px;text-align:center;background:#fff}
+.ablage.zieh{border-color:var(--orange);background:#fff4ee}
+.hilfe.ok{color:var(--gruen);font-weight:600}
+.b-gruppe h2{font-size:1rem;margin:20px 0 8px}
+.b-eintrag{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;padding:12px;border:1px solid var(--rand);border-radius:12px;background:#fff;margin-bottom:8px}
+.b-eintrag .name{flex:1 1 100%;font-weight:600;word-break:break-all}
+.b-eintrag .meta{flex:1 1 100%;font-size:13px;color:var(--grau)}
+.b-eintrag .btn{min-height:40px}

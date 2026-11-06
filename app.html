@@ -15,7 +15,14 @@
 <div class="wrap">
   <header class="top"><a class="logo" href="./"><i></i><span data-name>BauPilot</span></a></header>
 
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Bereiche" hidden>
+    <button role="tab" id="t-profil" aria-selected="true" aria-controls="tab-profil" data-tab="profil">Profil</button>
+    <button role="tab" id="t-firma" aria-selected="false" aria-controls="tab-firma" data-tab="firma" tabindex="-1">Firma</button>
+    <button role="tab" id="t-blaetter" aria-selected="false" aria-controls="tab-blaetter" data-tab="blaetter" tabindex="-1">Formblätter</button>
+  </nav>
+
   <main class="profil">
+   <div class="tab" id="tab-profil" role="tabpanel" aria-labelledby="t-profil">
     <!-- Ansicht 1: Daten eingeben -->
     <section id="ansicht-form" hidden>
       <h1 id="form-titel">Wer bist du?</h1>
@@ -96,11 +103,136 @@
       </div>
       <p class="hilfe" id="meldung" role="status"></p>
     </section>
+   </div>
+
+   <div class="tab" id="tab-firma" role="tabpanel" aria-labelledby="t-firma" hidden>
+    <h1>Deine Firma</h1>
+    <p class="lead">Diese Angaben erscheinen auf Berichten, Nachträgen und Anfragen.</p>
+    <form id="firma-form" novalidate autocomplete="on">
+      <div class="feld">
+        <label for="f-name">Firmenname</label>
+        <input id="f-name" type="text" autocomplete="organization" required aria-describedby="e-f-name">
+        <p class="fehler" id="e-f-name" role="alert"></p>
+      </div>
+      <div class="feld">
+        <label for="f-form">Rechtsform</label>
+        <select id="f-form">
+          <option value="">Bitte wählen</option><option>Einzelunternehmen</option><option>e. K.</option><option>GbR</option><option>eGbR</option>
+          <option>GmbH</option><option>UG (haftungsbeschränkt)</option><option>GmbH &amp; Co. KG</option><option>KG</option><option>OHG</option><option>AG</option><option>Sonstige</option>
+        </select>
+      </div>
+      <div class="feld">
+        <label for="f-str">Straße und Hausnummer</label>
+        <input id="f-str" type="text" autocomplete="street-address" required aria-describedby="e-f-str">
+        <p class="fehler" id="e-f-str" role="alert"></p>
+      </div>
+      <div class="zeile plz">
+        <div class="feld">
+          <label for="f-plz">PLZ</label>
+          <input id="f-plz" type="text" inputmode="numeric" autocomplete="postal-code" maxlength="5" required aria-describedby="e-f-plz">
+          <p class="fehler" id="e-f-plz" role="alert"></p>
+        </div>
+        <div class="feld">
+          <label for="f-ort">Ort</label>
+          <input id="f-ort" type="text" autocomplete="address-level2" required aria-describedby="e-f-ort">
+          <p class="fehler" id="e-f-ort" role="alert"></p>
+        </div>
+      </div>
+      <div class="feld">
+        <label for="f-tel">Telefon</label>
+        <input id="f-tel" type="tel" inputmode="tel" autocomplete="tel" placeholder="07836 1234" required aria-describedby="e-f-tel">
+        <p class="fehler" id="e-f-tel" role="alert"></p>
+      </div>
+      <div class="feld">
+        <label for="f-mail">E-Mail der Firma</label>
+        <input id="f-mail" type="email" inputmode="email" autocomplete="email" required aria-describedby="e-f-mail">
+        <p class="fehler" id="e-f-mail" role="alert"></p>
+      </div>
+      <div class="feld">
+        <label for="f-web">Webseite <span class="optional">(freiwillig)</span></label>
+        <input id="f-web" type="text" inputmode="url" autocomplete="url" placeholder="www.firma.de" aria-describedby="e-f-web">
+        <p class="fehler" id="e-f-web" role="alert"></p>
+      </div>
+      <div class="feld">
+        <label for="f-gf">Geschäftsführer oder Inhaber <span class="optional">(freiwillig)</span></label>
+        <input id="f-gf" type="text" autocomplete="off">
+      </div>
+
+      <h2 class="gruppe">Für Rechnungen und Formulare <span class="optional">(freiwillig)</span></h2>
+      <div class="zeile">
+        <div class="feld">
+          <label for="f-ust">USt-IdNr.</label>
+          <input id="f-ust" type="text" placeholder="DE123456789" autocapitalize="characters" aria-describedby="e-f-ust">
+          <p class="fehler" id="e-f-ust" role="alert"></p>
+        </div>
+        <div class="feld">
+          <label for="f-steuer">Steuernummer</label>
+          <input id="f-steuer" type="text" autocomplete="off">
+        </div>
+      </div>
+      <div class="feld">
+        <label for="f-hr">Handelsregister</label>
+        <input id="f-hr" type="text" placeholder="HRB 123456, Amtsgericht Stuttgart" autocomplete="off">
+      </div>
+      <div class="feld">
+        <label for="f-iban">IBAN</label>
+        <input id="f-iban" type="text" autocomplete="off" autocapitalize="characters" placeholder="DE00 0000 0000 0000 0000 00" aria-describedby="e-f-iban">
+        <p class="fehler" id="e-f-iban" role="alert"></p>
+      </div>
+      <div class="feld">
+        <label for="f-bic">BIC</label>
+        <input id="f-bic" type="text" autocomplete="off" autocapitalize="characters">
+      </div>
+
+      <h2 class="gruppe">Firmenlogo <span class="optional">(freiwillig)</span></h2>
+      <div class="logo-zeile">
+        <div class="logo-vorschau" id="logo-vorschau" aria-live="polite">Kein Logo</div>
+        <div>
+          <label class="btn klein ghost" for="f-logo">Logo auswählen</label>
+          <input id="f-logo" type="file" accept="image/png,image/jpeg,image/webp" class="versteckt">
+          <button class="btn klein ghost" type="button" id="logo-weg" hidden>Logo entfernen</button>
+          <p class="hilfe">PNG oder JPG.</p>
+          <p class="fehler" id="e-f-logo" role="alert"></p>
+        </div>
+      </div>
+
+      <p class="hilfe">Deine Firmendaten bleiben vorerst nur auf diesem Gerät gespeichert.</p>
+      <div class="knoepfe">
+        <button class="btn gelb gross" type="submit">Firmendaten speichern</button>
+      </div>
+      <p class="hilfe ok" id="f-meldung" role="status"></p>
+    </form>
+   </div>
+
+   <div class="tab" id="tab-blaetter" role="tabpanel" aria-labelledby="t-blaetter" hidden>
+    <h1>Formblätter</h1>
+    <p class="lead">Lade deine Vorlagen und Formulare hoch, zum Beispiel Aufgabenblätter, Bautagebuch oder Nachträge. Du findest sie hier wieder.</p>
+    <div class="upload">
+      <div class="feld">
+        <label for="b-kat">Art des Formblatts</label>
+        <select id="b-kat">
+          <option>Aufgabenblatt</option><option>Bautagebuch</option><option>Aufmaß</option><option>Nachtrag</option>
+          <option>Anfrage und Angebot</option><option>Lieferschein</option><option>Beleg und Abrechnung</option><option selected>Sonstiges</option>
+        </select>
+      </div>
+      <div class="ablage" id="ablage">
+        <label class="btn gelb gross" for="b-datei">Dateien auswählen</label>
+        <input id="b-datei" type="file" multiple class="versteckt" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.heic,application/pdf,image/*">
+        <p class="hilfe">PDF, Word, Excel oder Bilder, jede Datei bis 25 MB. Auf dem Rechner kannst du Dateien auch hierher ziehen.</p>
+      </div>
+      <p class="fehler" id="b-fehler" role="alert"></p>
+    </div>
+    <div id="b-liste" aria-live="polite"></div>
+    <p class="hilfe" id="b-platz"></p>
+   </div>
   </main>
 </div>
 
 <script src="site.config.js"></script>
 <script src="profil.js"></script>
+<script src="firma.js"></script>
+<script src="blaetter.js"></script>
+<script src="app.js"></script>
 <script>if ('serviceWorker' in navigator) addEventListener('load', function () { navigator.serviceWorker.register('sw.js'); });</script>
 <script>(function(){var n=(window.SITE||{}).name;if(!n)return;var e=document.querySelectorAll("[data-name]");for(var i=0;i<e.length;i++)e[i].textContent=n;document.title=document.title.replace(/BauPilot/g,n);})();</script>
 </body>

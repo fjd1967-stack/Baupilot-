@@ -79,6 +79,7 @@
     p.gespeichert = new Date().toISOString();
     if (!speichern(p)) { fehler('email', 'Die Angaben konnten auf diesem Gerät nicht gespeichert werden. Schließe den privaten Modus des Browsers und versuche es noch einmal.'); $('email').focus(); return; }
     profilAnzeigen(p);
+    document.dispatchEvent(new Event('profil-geaendert'));
   });
 
   $('bearbeiten').addEventListener('click', function () { formular(laden()); $('vorname').focus(); });
@@ -86,6 +87,7 @@
   $('loeschen').addEventListener('click', function () {
     if (!window.confirm('Alle deine Angaben auf diesem Gerät löschen?')) return;
     entfernen(); formular(null);
+    document.dispatchEvent(new Event('profil-geaendert'));
   });
 
   var vorhanden = laden();
