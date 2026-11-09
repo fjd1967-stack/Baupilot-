@@ -26,6 +26,7 @@
       <div class="feld"><label for="name">Dein Name</label><input id="name" autocomplete="name" required><p class="fehler" id="e-name" role="alert"></p></div>
       <div class="feld"><label for="email">E-Mail</label><input id="email" type="email" inputmode="email" autocomplete="email" required><p class="fehler" id="e-email" role="alert"></p></div>
       <div class="feld"><label for="nutzer">Anzahl Nutzer (du eingeschlossen)</label><input id="nutzer" type="number" inputmode="numeric" min="1" max="200" value="5"></div>
+      <div class="feld"><label for="ki">Davon mit KI-Assistent <span class="optional">(freiwillig)</span></label><input id="ki" type="number" inputmode="numeric" min="0" max="200" value="0"><p class="hilfe">Mit dem KI-Assistenten stellt jeder Nutzer die App per Sprache oder Text auf seine Wünsche ein. <span id="kipreis"></span> je Nutzer und Monat netto.</p><p class="fehler" id="e-ki" role="alert"></p></div>
       <p class="plan" id="summe" aria-live="polite"></p>
       <label class="check"><input type="checkbox" id="agb"> Ich erteile den Auftrag und akzeptiere die <a href="agb.html" target="_blank">AGB</a> und die <a href="datenschutz.html" target="_blank">Datenschutzerklärung</a>.</label>
       <p class="fehler" id="e-agb" role="alert"></p>
@@ -38,14 +39,17 @@
 <script>
 (function(){
   var S=window.SITE||{},$=function(i){return document.getElementById(i)};
-  var P1=S.priceFirst||39.9,P2=S.priceExtra||9.9;
+  var P1=S.priceFirst||39.9,P2=S.priceExtra||9.9,PK=S.priceKi||14.9;
   var eur=function(x){return x.toFixed(2).replace('.',',')+' €'};
   document.querySelectorAll('[data-name]').forEach(function(e){e.textContent=S.name||'BauPilot'});
   var p=new URLSearchParams(location.search);
   if(p.get('nutzer'))$('nutzer').value=Math.min(200,Math.max(1,parseInt(p.get('nutzer'),10)||5));
   if(p.get('abgebrochen'))$('abbruch').hidden=false;
   function n(){var v=parseInt($('nutzer').value,10);return v>=1?Math.min(v,200):1}
-  function rechne(){var k=n();$('summe').textContent=eur(P1+(k-1)*P2)+' im Monat netto, zuzüglich Umsatzsteuer'}
+  function kiN(){var v=parseInt($('ki').value,10)||0;return Math.max(0,Math.min(v,n()))}
+  $('kipreis').textContent=eur(PK);
+  function rechne(){var k=n();$('summe').textContent=eur(P1+(k-1)*P2+kiN()*PK)+' im Monat netto, zuzüglich Umsatzsteuer'}
+  $('ki').addEventListener('input',rechne);
   $('nutzer').addEventListener('input',rechne);rechne();
   function f(id,t){var e=$('e-'+id);if(e)e.textContent=t||'';var x=$(id);if(x){if(t)x.setAttribute('aria-invalid','true');else x.removeAttribute('aria-invalid')}return !t}
   $('best').addEventListener('submit',function(ev){
@@ -60,7 +64,7 @@
     ok=f('agb',$('agb').checked?'':'Bitte nimm den Auftrag und die AGB an.')&&ok;
     if(!ok){var x=document.querySelector('[aria-invalid=true]');if(x)x.focus();return}
     $('los').disabled=true;$('e-form').textContent='';
-    fetch('/api/auftrag',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({firma:v('firma'),strasse:v('strasse'),plz:v('plz'),ort:v('ort'),ust:v('ust'),name:v('name'),email:v('email'),nutzer:n(),agb:true})})
+    fetch('/api/auftrag',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({firma:v('firma'),strasse:v('strasse'),plz:v('plz'),ort:v('ort'),ust:v('ust'),name:v('name'),email:v('email'),nutzer:n(),ki:kiN(),agb:true})})
       .then(function(r){return r.json().then(function(j){return{s:r.status,j:j}})})
       .then(function(r){if(r.s===200&&r.j.url){location.href=r.j.url}else{$('e-form').textContent=r.j.fehler||'Das hat nicht geklappt. Bitte versuche es noch einmal.';$('los').disabled=false}})
       .catch(function(){$('e-form').textContent='Keine Verbindung. Bitte versuche es noch einmal.';$('los').disabled=false});

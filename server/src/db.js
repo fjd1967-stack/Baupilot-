@@ -26,4 +26,15 @@ CREATE TABLE IF NOT EXISTS sitzung(
 CREATE TABLE IF NOT EXISTS ereignis(id TEXT PRIMARY KEY, art TEXT, zeit INTEGER NOT NULL);
 CREATE TABLE IF NOT EXISTS postausgang(id INTEGER PRIMARY KEY, an TEXT, betreff TEXT, text TEXT, zeit INTEGER NOT NULL, gesendet INTEGER, fehler TEXT);
 `);
+// spätere Erweiterungen (Varianten, KI-Zusatz, Profil, Firmendaten, Nutzdaten)
+const spalte = (t, c, d) => { if (!db.prepare(`PRAGMA table_info(${t})`).all().some(x => x.name === c)) db.exec(`ALTER TABLE ${t} ADD COLUMN ${c} ${d}`); };
+spalte('nutzer', 'variante', "TEXT NOT NULL DEFAULT 'polier'");
+spalte('nutzer', 'ki', 'INTEGER NOT NULL DEFAULT 0');
+spalte('nutzer', 'profil', "TEXT NOT NULL DEFAULT '{}'");
+spalte('nutzer', 'einstellungen', "TEXT NOT NULL DEFAULT '{}'");
+spalte('konto', 'firmendaten', "TEXT NOT NULL DEFAULT '{}'");
+spalte('konto', 'ki_gebucht', 'INTEGER NOT NULL DEFAULT 0');
+spalte('konto', 'item_ki', 'TEXT');
+db.exec(`CREATE TABLE IF NOT EXISTS daten(nutzer INTEGER NOT NULL REFERENCES nutzer(id) ON DELETE CASCADE, schluessel TEXT NOT NULL, wert TEXT NOT NULL, geaendert INTEGER NOT NULL, PRIMARY KEY(nutzer,schluessel));
+CREATE TABLE IF NOT EXISTS ki_log(id INTEGER PRIMARY KEY, nutzer INTEGER NOT NULL, wunsch TEXT, ergebnis TEXT, zeit INTEGER NOT NULL);`);
 export const jetzt = () => Date.now();

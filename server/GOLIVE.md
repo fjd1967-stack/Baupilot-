@@ -10,7 +10,11 @@ Der Verkauf ist abgeschaltet (`shop: false` in `site.config.js`). Erst wenn alle
 - Nutzer anlegen, einladen, Limit nach gebuchter Zahl, Nutzerzahl später ändern
 - Zahlung scheitert: Konto gesperrt, nach Zahlung wieder frei. Kündigung: Konto beendet.
 - Absicherung: Firewall, Schlüssel-Login, automatische Updates, Fail2ban, HTTPS, Sicherheitskopfzeilen, Rate-Limits, verschlüsselte tägliche Backups an zweiten Ort
-- 13 automatische Tests (`cd server && npm test`)
+- Drei Varianten (Vorarbeiter, Polier, Bauleiter): Der Server erlaubt jedem Nutzer nur die Bereiche seiner Variante; der Chef legt Nutzer mit Variante an und ändert sie später (`/api/team/aendern`). Zuschnitt siehe `server/src/varianten.js`.
+- Chef-Einblick: Der Chef liest Profil und Daten aller Mitarbeiter seines Kontos (`/api/team/einblick`), nur lesend.
+- Firmendaten pro Konto (Chef schreibt, Mitarbeiter lesen) und persönliche Daten pro Nutzer (`/api/firma`, `/api/profil`): damit können mehrere Firmen die App nutzen. Die App gilt für alle Gewerke, nicht nur Abbruch.
+- KI-Assistent als Zusatz pro Nutzer (Standard 14,90 € netto, **Preis noch von dir festzulegen**): im Auftrag, im Stripe-Abo und nachträglich buchbar (`/api/abo/ki`). Der Assistent darf nur erlaubte persönliche Einstellungen setzen (Schriftgröße, Kontrast, Startseite, Ausblenden, Übersetzungssprachen, Standardtext), kein Programm ändern. Braucht `ANTHROPIC_API_KEY` (eigene Kosten pro Anfrage; Rate-Limit 30 pro Stunde und Nutzer).
+- 17 automatische Tests (`cd server && npm test`)
 
 ## Noch nicht gegen echte Dienste geprüft (geht erst mit Konten)
 - Stripe live (nur mit Test-Schlüsseln und Testkarte bzw. Test-IBAN prüfen)
@@ -25,7 +29,8 @@ Der Verkauf ist abgeschaltet (`shop: false` in `site.config.js`). Erst wenn alle
 4. **Absender-Postfach** (z. B. noreply@Domain) mit SPF, DKIM, DMARC. SMTP-Daten in `.env`.
 5. **Impressum** ausfüllen (Straße, Gesellschafter, Telefon, E-Mail, USt-ID).
 6. **Anwalt:** AGB, Datenschutzerklärung, Auftragsverarbeitungsvertrag für Kunden, Verträge mit Hetzner und Stripe (AV-Verträge werden dort online abgeschlossen).
-7. **Markenprüfung** für den Namen (OrdoBau) vor dem Umbenennen.
+7. **Preis des KI-Assistenten** festlegen (`PRICE_KI_CENT` und `priceKi` in `site.config.js`) und **Anthropic-API-Schlüssel** besorgen. Datenschutz: KI-Anfragen gehen an Anthropic, im AV-Vertrag/Datenschutz nennen.
+7b. **Markenprüfung** für den Namen (OrdoBau) vor dem Umbenennen.
 8. **Steuerberater:** Umsatzsteuer, Rechnungsangaben, E-Rechnung (siehe unten).
 
 ## Rechnungen und Steuer

@@ -36,6 +36,7 @@ export function checkoutDaten({ konto, email }) {
   });
   const items = [posten(`${cfg.appName}, erster Nutzer`, cfg.priceFirstCent, 1)];
   if (konto.nutzer > 1) items.push(posten(`${cfg.appName}, weiterer Nutzer`, cfg.priceExtraCent, konto.nutzer - 1));
+  if (konto.ki_gebucht > 0) items.push(posten(`${cfg.appName}, KI-Assistent`, cfg.priceKiCent, konto.ki_gebucht));
   return {
     mode: 'subscription',
     payment_method_types: ['sepa_debit'],
@@ -65,7 +66,8 @@ let zaehler = 0;
 function mock(methode, pfad, d) {
   zaehler++;
   if (pfad === '/v1/checkout/sessions') return { id: 'cs_mock_' + zaehler, url: 'https://checkout.stripe.test/' + zaehler, _daten: d };
+  if (pfad === '/v1/subscription_items') return { id: 'si_mock_' + zaehler, quantity: d.quantity };
   if (pfad.startsWith('/v1/subscription_items/')) return { id: pfad.split('/').pop(), quantity: d.quantity };
-  if (pfad.startsWith('/v1/subscriptions/')) return { id: 'sub_mock', items: { data: [{ id: 'si_erst', price: { unit_amount: 3990 } }, { id: 'si_extra', price: { unit_amount: 990 } }] } };
+  if (pfad.startsWith('/v1/subscriptions/')) return { id: 'sub_mock', items: { data: [{ id: 'si_erst', price: { unit_amount: 3990 } }, { id: 'si_extra', price: { unit_amount: 990 } }, { id: 'si_ki', price: { unit_amount: cfg.priceKiCent } }] } };
   return {};
 }

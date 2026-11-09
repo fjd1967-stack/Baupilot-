@@ -6,6 +6,8 @@ window.SITE = {
   // Preise in Euro pro Monat, zzgl. MwSt.: erster Nutzer (Chef-Konto) und jeder weitere Nutzer.
   priceFirst: 39.90,
   priceExtra: 9.90,
+  // KI-Assistent (optional, pro Nutzer und Monat, netto). Muss mit PRICE_KI_CENT am Server übereinstimmen.
+  priceKi: 14.90,
   maxUsers: 200,
   // false = Verkauf noch nicht online (Kaufknopf zeigt "startet in Kürze"). Erst auf true setzen, wenn alles in GOLIVE.md erledigt ist.
   shop: false

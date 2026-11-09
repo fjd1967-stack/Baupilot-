@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import http from 'node:http';
-process.env.DB_FILE = ':memory:'; process.env.STRIPE_MOCK = '1'; process.env.STRIPE_WEBHOOK_SECRET = 'whsec_test'; process.env.BASE_URL = 'http://t';
+process.env.DB_FILE = ':memory:'; process.env.STRIPE_MOCK = '1'; process.env.STRIPE_WEBHOOK_SECRET = 'whsec_test'; process.env.BASE_URL = 'http://t'; process.env.KI_MOCK = '1';
 const { handler } = await import('../src/server.js');
 const { hmac } = await import('../src/crypto.js');
 const { db } = await import('../src/db.js');
@@ -123,5 +123,62 @@ test('Abmelden macht Sitzung ungültig; Auftrag gehört nur dem Chef', async () 
 
 test('Sicherheitskopfzeilen gesetzt', async () => {
   const r = await call('GET', '/api/health'); assert.equal(r.h.get('x-content-type-options'), 'nosniff'); assert.equal(r.j.ok, true);
+});
+
+// ---- neue Funktionen: Varianten, KI-Zusatz, Profil, Firma, Einblick
+test('Varianten: Chef hat alles, Mitglied nur seinen Umfang', async () => {
+  await db.prepare("UPDATE konto SET status='aktiv', nutzer=8 WHERE id=1").run();
+  const v = await call('GET', '/api/login/verify?t=x'); assert.equal(v.s, 400);
+  const tok = 'tok_neu'; const { hash } = await import('../src/crypto.js');
+  db.prepare("INSERT INTO sitzung(hash,nutzer,ablauf) VALUES(?,1,?)").run(hash(tok), Date.now() + 1e6);
+  const chef = 'sid=' + tok;
+  const me = (await call('GET', '/api/me', null, chef)).j; assert.equal(me.variante, 'bauleiter'); assert.ok(me.funktionen.includes('nachtraege'));
+  const r = await call('POST', '/api/team', { name: 'Vorarbeiter Ali', kontakt: '0160 1234567', variante: 'vorarbeiter' }, chef); assert.equal(r.s, 200);
+  const t = /einladung=([\w-]+)/.exec(r.j.einladung.link)[1];
+  const m = (await call('GET', '/api/einladung?t=' + t)).h.get('set-cookie').split(';')[0];
+  const mm = (await call('GET', '/api/me', null, m)).j; assert.equal(mm.variante, 'vorarbeiter'); assert.ok(!mm.funktionen.includes('bautagebuch')); assert.ok(mm.funktionen.includes('aufgaben'));
+  assert.equal((await call('PUT', '/api/daten', { bereich: 'bautagebuch', wert: { a: 1 } }, m)).s, 403, 'Vorarbeiter darf kein Bautagebuch');
+  assert.equal((await call('PUT', '/api/daten', { bereich: 'belege/2026-11', wert: { summe: 12.5 } }, m)).s, 200);
+  assert.equal((await call('PUT', '/api/daten', { bereich: '../x', wert: 1 }, m)).s, 400);
+  // Chef sieht Daten und Profil des Mitarbeiters, Mitarbeiter nicht umgekehrt
+  const id = mm && db.prepare("SELECT id FROM nutzer WHERE name='Vorarbeiter Ali'").get().id;
+  await call('POST', '/api/profil', { vorname: 'Ali', handy: '0160 1234567', email: 'ali@bau.de' }, m);
+  const ein = (await call('GET', '/api/team/einblick?id=' + id, null, chef)).j; assert.equal(ein.profil.vorname, 'Ali'); assert.equal(ein.bereiche[0].schluessel, 'belege/2026-11');
+  assert.equal((await call('GET', '/api/team/einblick?id=' + id + '&bereich=belege/2026-11', null, chef)).j.wert.summe, 12.5);
+  assert.equal((await call('GET', '/api/team/einblick?id=1', null, m)).s, 403);
+  // Variante ändern
+  assert.equal((await call('POST', '/api/team/aendern', { id, variante: 'polier' }, chef)).s, 200);
+  assert.equal((await call('PUT', '/api/daten', { bereich: 'bautagebuch', wert: { a: 1 } }, m)).s, 200);
+  assert.equal((await call('POST', '/api/team/aendern', { id, variante: 'quatsch' }, chef)).s, 400);
+  // anderes Konto: kein Einblick
+  assert.equal((await call('GET', '/api/team/einblick?id=999', null, chef)).s, 404);
+});
+
+test('Firmendaten: Chef schreibt, Mitarbeiter liest, Fremdfelder werden verworfen', async () => {
+  const { hash } = await import('../src/crypto.js'); const chef = 'sid=tok_neu';
+  const r = await call('POST', '/api/firma', { name: 'Dieterle Bau', plz: '77761', tel: '07836 1', boese: 'x' }, chef); assert.equal(r.s, 200); assert.equal(r.j.boese, undefined);
+  assert.equal((await call('POST', '/api/firma', { plz: '12' }, chef)).s, 400);
+  const mid = db.prepare("SELECT id FROM nutzer WHERE name='Vorarbeiter Ali'").get().id;
+  db.prepare("INSERT INTO sitzung(hash,nutzer,ablauf) VALUES(?,?,?)").run(hash('tok_m'), mid, Date.now() + 1e6);
+  assert.equal((await call('GET', '/api/firma', null, 'sid=tok_m')).j.name, 'Dieterle Bau');
+  assert.equal((await call('POST', '/api/firma', { name: 'X' }, 'sid=tok_m')).s, 403);
+});
+
+test('KI-Zusatz: Preis, Zuteilung, Assistent ändert nur erlaubte Einstellungen', async () => {
+  const chef = 'sid=tok_neu', mid = db.prepare("SELECT id FROM nutzer WHERE name='Vorarbeiter Ali'").get().id;
+  assert.equal((await call('POST', '/api/team/aendern', { id: mid, ki: true }, chef)).s, 409, 'noch keine KI gebucht');
+  const a = await call('POST', '/api/abo/ki', { anzahl: 2 }, chef); assert.equal(a.s, 200); assert.equal(a.j.monatlichNetto, 3990 + 7 * 990 + 2 * 1490);
+  assert.equal((await call('POST', '/api/team/aendern', { id: mid, ki: true }, chef)).s, 200);
+  const k = await call('POST', '/api/ki', { wunsch: 'Schrift bitte groß' }, 'sid=tok_m'); assert.equal(k.s, 200); assert.equal(k.j.einstellungen.schriftgroesse, 'gross');
+  assert.equal((await call('GET', '/api/einstellungen', null, 'sid=tok_m')).j.schriftgroesse, 'gross');
+  assert.equal((await call('POST', '/api/ki', { wunsch: 'Schrift bitte groß' }, chef)).s, 403, 'Chef ohne eigene KI-Zuteilung');
+  assert.equal((await call('POST', '/api/abo/ki', { anzahl: 0 }, chef)).s, 409, 'noch vergeben');
+});
+
+test('Bestellung mit KI-Assistenten: Summe und Stripe-Position', async () => {
+  const d = checkoutDaten({ konto: { id: 9, nutzer: 3, ki_gebucht: 2 }, email: 'a@b.de' });
+  assert.equal(d.line_items.length, 3); assert.equal(d.line_items[2].price_data.unit_amount, 1490); assert.equal(d.line_items[2].quantity, 2);
+  assert.equal((await call('POST', '/api/auftrag', { ...bestell, email: 'zwei@bau.de', nutzer: 3, ki: 5 }, null, { 'X-Forwarded-For': '9.9.9.9' })).s, 400, 'mehr KI als Nutzer');
+  const r = await call('POST', '/api/auftrag', { ...bestell, email: 'zwei@bau.de', nutzer: 3, ki: 2 }, null, { 'X-Forwarded-For': '9.9.9.9' }); assert.equal(r.s, 200); assert.equal(r.j.monatlichNetto, 3990 + 2 * 990 + 2 * 1490);
 });
 test.after(() => srv.close());

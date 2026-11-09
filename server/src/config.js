@@ -8,6 +8,11 @@ export const cfg = {
   appName: e.APP_NAME || 'BauPilot',
   priceFirstCent: +e.PRICE_FIRST_CENT || 3990,
   priceExtraCent: +e.PRICE_EXTRA_CENT || 990,
+  // KI-Assistent als Zusatz pro Nutzer und Monat (netto). Preis vor dem Start festlegen: PRICE_KI_CENT
+  priceKiCent: +e.PRICE_KI_CENT || 1490,
+  anthropicKey: e.ANTHROPIC_API_KEY || '',
+  kiModell: e.KI_MODELL || 'claude-sonnet-4-5',
+  kiMock: e.KI_MOCK === '1',
   maxUsers: +e.MAX_USERS || 200,
   agbVersion: e.AGB_VERSION || '2026-11-entwurf',
   stripeKey: e.STRIPE_SECRET_KEY || '',
