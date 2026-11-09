@@ -10,8 +10,8 @@ const srv=http.createServer((req,res)=>{ if(req.url.startsWith('/api/')||req.url
   res.setHeader('Content-Type',types[path.extname(p)]||'application/octet-stream');res.end(fs.readFileSync(p));});
 await new Promise(r=>srv.listen(4124,r));
 db.prepare("INSERT INTO konto(id,status,firma,strasse,plz,ort,nutzer,erstellt,firmendaten) VALUES(1,'aktiv','Muster Bau GmbH','Hauptstr. 1','77761','Schiltach',5,?,?)").run(jetzt(),JSON.stringify({name:'Muster Bau GmbH',strasse:'Hauptstr. 1',plz:'77761',ort:'Schiltach',tel:'07836 123',mail:'info@muster.de'}));
-db.prepare("INSERT INTO nutzer(id,konto,name,kontakt,rolle,variante,erstellt) VALUES(1,1,'Frank Muster','f@x.de','chef','bauleiter',?)").run(jetzt());
-db.prepare("INSERT INTO nutzer(id,konto,name,kontakt,rolle,variante,erstellt) VALUES(2,1,'Ali Vorarbeiter','0171','mitglied','vorarbeiter',?)").run(jetzt());
+db.prepare("INSERT INTO nutzer(id,konto,name,kontakt,rolle,variante,sprache_gesetzt,erstellt) VALUES(1,1,'Frank Muster','f@x.de','chef','bauleiter',1,?)").run(jetzt());
+db.prepare("INSERT INTO nutzer(id,konto,name,kontakt,rolle,variante,sprache_gesetzt,erstellt) VALUES(2,1,'Ali Vorarbeiter','0171','mitglied','vorarbeiter',1,?)").run(jetzt());
 for(const [t,n] of [['tc',1],['tm',2]]) db.prepare("INSERT INTO sitzung(hash,nutzer,ablauf) VALUES(?,?,?)").run(hash(t),n,jetzt()+1e9);
 const { chromium } = createRequire(import.meta.url)(process.env.PW);
 const b=await chromium.launch(); const out=process.env.OUT;

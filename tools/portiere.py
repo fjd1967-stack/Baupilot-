@@ -19,7 +19,9 @@ ers('<link rel="preconnect" href="https://fonts.googleapis.com">\n', '', 'font1'
 ers('<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n', '', 'font2')
 ers(re.escape('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">')+'\n', '<link rel="stylesheet" href="schriften.css">\n', 'font3', True, 1)
 # Brücke zur Laufzeit zuerst laden
-ers('<body>', '<body>\n<script src="claude-shim.js"></script>\n<script src="bau-ext.js"></script>', 'shim', soll=1)
+ers('<body>', '<body>\n<script src="claude-shim.js"></script>\n<script src="bau-ext.js"></script>\n<script src="sprachen.js"></script><script src="woerter.js"></script><script src="i18n.js"></script>', 'shim', soll=1)
+# Spracheingabe in der Sprache des Nutzers
+ers("r.lang = 'de-DE';", "r.lang = (window.I18N&&I18N.sr)||'de-DE';", 'srlang', soll=1)
 # App-Adresse
 ers("const APP_URL = 'https://claude.ai/artifact/DnKQtsFhyThiPab2mngM5q';", "const APP_URL = location.origin + '/bau.html';", 'appurl', soll=1)
 # Firmendaten aus dem Konto statt fest verdrahtet

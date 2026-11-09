@@ -16,6 +16,10 @@
   }
   function knopf(text, fn, cls) { var b = el('button', 'btn klein ' + (cls || 'ghost'), text); b.type = 'button'; b.addEventListener('click', fn); return b; }
   function feld(label, kontrolle, id) { var l = el('label', null, label); l.setAttribute('for', id); kontrolle.id = id; return el('div', 'feld', null, [l, kontrolle]); }
+  function sprWahl(wert) {
+    var s = el('select'), l = (me && me.sprachen) || { de: 'Deutsch' };
+    Object.keys(l).forEach(function (c) { var o = el('option', null, l[c]); o.value = c; s.appendChild(o); }); s.value = wert || 'de'; return s;
+  }
   function varWahl(wert) {
     var s = el('select'); Object.keys(VAR).forEach(function (k) { var o = el('option', null, VAR[k]); o.value = k; s.appendChild(o); }); s.value = wert || 'polier'; return s;
   }
@@ -92,15 +96,15 @@
     var plan = el('p', 'plan'), liste = el('div'), meld = el('p', 'hilfe', ''); meld.setAttribute('role', 'status');
     var nameF = el('input'); nameF.type = 'text'; nameF.autocomplete = 'off';
     var konF = el('input'); konF.type = 'text'; konF.inputMode = 'email'; konF.autocomplete = 'off';
-    var varF = varWahl('polier'), kiF = el('input'); kiF.type = 'checkbox';
+    var varF = varWahl('polier'), sprF = sprWahl('de'), kiF = el('input'); kiF.type = 'checkbox';
     var kiZeile = el('label', 'check', ' KI-Assistent für diesen Nutzer', [null]); kiZeile.insertBefore(kiF, kiZeile.firstChild);
     var einl = el('div');
     var anlegen = el('button', 'btn gelb gross', 'Nutzer anlegen'); anlegen.type = 'submit';
-    var form = el('form', null, null, [feld('Name', nameF, 'k-name'), feld('Handynummer oder E-Mail', konF, 'k-kon'), feld('Variante', varF, 'k-var'), kiZeile, el('div', 'knoepfe', null, [anlegen])]);
+    var form = el('form', null, null, [feld('Name', nameF, 'k-name'), feld('Handynummer oder E-Mail', konF, 'k-kon'), feld('Variante', varF, 'k-var'), feld('Sprache des Mitarbeiters', sprF, 'k-spr'), kiZeile, el('div', 'knoepfe', null, [anlegen])]);
     form.noValidate = true;
     form.addEventListener('submit', function (ev) {
       ev.preventDefault(); meld.textContent = '';
-      api('POST', '/api/team', { name: nameF.value, kontakt: konF.value, variante: varF.value, ki: kiF.checked }).then(function (r) {
+      api('POST', '/api/team', { name: nameF.value, kontakt: konF.value, variante: varF.value, sprache: sprF.value, ki: kiF.checked }).then(function (r) {
         if (r.s !== 200) { meld.textContent = r.j.fehler || 'Das hat nicht geklappt.'; return; }
         einladungAnzeigen(einl, r.j.einladung, konF.value); form.reset(); laden();
       });
@@ -115,13 +119,13 @@
         plan.textContent = 'Gebucht: ' + r.j.gebucht + ' Nutzer · angelegt: ' + n.length + ' · KI-Assistenten: ' + kiN + ' von ' + r.j.kiGebucht;
         liste.textContent = '';
         n.forEach(function (u) {
-          var v = varWahl(u.variante), k = el('input'); k.type = 'checkbox'; k.checked = !!u.ki;
+          var v = varWahl(u.variante), sp = sprWahl(u.sprache), k = el('input'); k.type = 'checkbox'; k.checked = !!u.ki;
           var kl = el('label', 'check', ' KI', [null]); kl.insertBefore(k, kl.firstChild);
-          function speichern() { api('POST', '/api/team/aendern', { id: u.id, variante: v.value, ki: k.checked }).then(function (x) { if (x.s !== 200) { meld.textContent = x.j.fehler || 'Das hat nicht geklappt.'; laden(); } else meld.textContent = 'Gespeichert.'; }); }
-          v.addEventListener('change', speichern); k.addEventListener('change', speichern);
+          function speichern() { api('POST', '/api/team/aendern', { id: u.id, variante: v.value, sprache: sp.value, ki: k.checked }).then(function (x) { if (x.s !== 200) { meld.textContent = x.j.fehler || 'Das hat nicht geklappt.'; laden(); } else meld.textContent = 'Gespeichert.'; }); }
+          v.addEventListener('change', speichern); sp.addEventListener('change', speichern); k.addEventListener('change', speichern);
           var z = el('div', 'zeile2');
           if (u.rolle === 'mitglied') {
-            z.appendChild(v); z.appendChild(kl);
+            z.appendChild(v); z.appendChild(sp); z.appendChild(kl);
             z.appendChild(knopf('Einladung', function () { api('POST', '/api/team/einladen', { id: u.id }).then(function (x) { if (x.s === 200) einladungAnzeigen(einl, x.j.einladung, u.kontakt); else meld.textContent = x.j.fehler || ''; }); }));
             z.appendChild(knopf('Entfernen', function () { if (confirm(u.name + ' wirklich entfernen?')) api('DELETE', '/api/team', { id: u.id }).then(laden); }));
           }

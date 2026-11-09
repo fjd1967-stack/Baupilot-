@@ -32,6 +32,8 @@ spalte('nutzer', 'variante', "TEXT NOT NULL DEFAULT 'polier'");
 spalte('nutzer', 'ki', 'INTEGER NOT NULL DEFAULT 0');
 spalte('nutzer', 'profil', "TEXT NOT NULL DEFAULT '{}'");
 spalte('nutzer', 'einstellungen', "TEXT NOT NULL DEFAULT '{}'");
+spalte('nutzer', 'sprache', "TEXT NOT NULL DEFAULT 'de'");
+spalte('nutzer', 'sprache_gesetzt', 'INTEGER NOT NULL DEFAULT 0');
 spalte('konto', 'firmendaten', "TEXT NOT NULL DEFAULT '{}'");
 spalte('konto', 'ki_gebucht', 'INTEGER NOT NULL DEFAULT 0');
 spalte('konto', 'item_ki', 'TEXT');
@@ -39,5 +41,6 @@ db.exec(`CREATE TABLE IF NOT EXISTS dok(konto INTEGER NOT NULL REFERENCES konto(
 CREATE TABLE IF NOT EXISTS asset(id TEXT PRIMARY KEY, konto INTEGER NOT NULL REFERENCES konto(id) ON DELETE CASCADE, typ TEXT NOT NULL, name TEXT, groesse INTEGER NOT NULL, inhalt BLOB NOT NULL, erstellt INTEGER NOT NULL);
 CREATE INDEX IF NOT EXISTS asset_konto ON asset(konto);
 CREATE TABLE IF NOT EXISTS daten(nutzer INTEGER NOT NULL REFERENCES nutzer(id) ON DELETE CASCADE, schluessel TEXT NOT NULL, wert TEXT NOT NULL, geaendert INTEGER NOT NULL, PRIMARY KEY(nutzer,schluessel));
+CREATE TABLE IF NOT EXISTS uebersetzung(hash TEXT PRIMARY KEY, nach TEXT NOT NULL, text TEXT NOT NULL, zeit INTEGER NOT NULL);
 CREATE TABLE IF NOT EXISTS ki_log(id INTEGER PRIMARY KEY, nutzer INTEGER NOT NULL, wunsch TEXT, ergebnis TEXT, zeit INTEGER NOT NULL);`);
 export const jetzt = () => Date.now();

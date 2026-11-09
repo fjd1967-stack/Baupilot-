@@ -1,3 +1,4 @@
+import { SPRACHEN } from './sprachen.js';
 // Funktionsumfang der drei Varianten. Wird vom Server durchgesetzt und der App über /api/me geliefert.
 export const FUNKTIONEN = {
   aufgaben: 'Aufgaben verteilen, Rückmeldung „erledigt“ per WhatsApp',
@@ -34,7 +35,8 @@ export const EINSTELLUNGEN = {
   kontrast: v => ['normal', 'hoch'].includes(v),
   startseite: v => typeof v === 'string' && Object.keys(FUNKTIONEN).includes(v),
   ausblenden: v => Array.isArray(v) && v.length <= 20 && v.every(x => Object.keys(FUNKTIONEN).includes(x)),
-  uebersetzung: v => Array.isArray(v) && v.length <= 8 && v.every(x => ['sq', 'ro', 'tr', 'pl', 'en', 'el', 'bg'].includes(x)),
+  uebersetzung: v => Array.isArray(v) && v.length <= 8 && v.every(x => x !== 'de' && Object.keys(SPRACHEN).includes(x)),
+  sprache: v => Object.keys(SPRACHEN).includes(v),
   standardtext: v => typeof v === 'string' && v.length <= 500
 };
 

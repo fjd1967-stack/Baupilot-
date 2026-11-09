@@ -56,3 +56,10 @@ cp .env.example .env   # ausfüllen
 docker compose up -d --build
 ```
 Danach: Testbestellung mit Stripe-Testmodus, Testbackup und Wiederherstellung, Testausfall (Server neu starten), erst dann `shop: true`.
+
+## Sprachen (Mehrsprachigkeit)
+- Jeder Nutzer wählt seine Sprache (beim ersten Start oder über den Knopf 🌐 unten links); Chef legt Mitarbeiter mit Sprache an (Team) und kann sie ändern.
+- Oberfläche und fremde Texte erscheinen in der gewählten Sprache (woerter.js zuerst, Rest übersetzt der Server und merkt es sich für alle Konten, Tabelle `uebersetzung`). Eingaben werden beim Verlassen des Feldes ins Deutsche übersetzt; Dokumente/PDF bleiben deutsch.
+- Braucht ANTHROPIC_API_KEY (Modell UEBERSETZ_MODELL, Standard Haiku). Grenzen: 900 Anfragen/Stunde/Nutzer, 40 Texte je Anfrage.
+- Neue Sprache: Zeile in server/src/sprachen.js und sprachen.js (Wörterbuch optional in woerter.js).
+- Tests: `npm test` (Server) und server/test/ui/sprache-e2e.mjs (Browser, PW=<Pfad zu playwright> OUT=/tmp).
