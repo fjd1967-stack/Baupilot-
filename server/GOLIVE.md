@@ -14,7 +14,14 @@ Der Verkauf ist abgeschaltet (`shop: false` in `site.config.js`). Erst wenn alle
 - Chef-Einblick: Der Chef liest Profil und Daten aller Mitarbeiter seines Kontos (`/api/team/einblick`), nur lesend.
 - Firmendaten pro Konto (Chef schreibt, Mitarbeiter lesen) und persönliche Daten pro Nutzer (`/api/firma`, `/api/profil`): damit können mehrere Firmen die App nutzen. Die App gilt für alle Gewerke, nicht nur Abbruch.
 - KI-Assistent als Zusatz pro Nutzer (Standard 14,90 € netto, **Preis noch von dir festzulegen**): im Auftrag, im Stripe-Abo und nachträglich buchbar (`/api/abo/ki`). Der Assistent darf nur erlaubte persönliche Einstellungen setzen (Schriftgröße, Kontrast, Startseite, Ausblenden, Übersetzungssprachen, Standardtext), kein Programm ändern. Braucht `ANTHROPIC_API_KEY` (eigene Kosten pro Anfrage; Rate-Limit 30 pro Stunde und Nutzer).
-- 17 automatische Tests (`cd server && npm test`)
+- 20 automatische Server-Tests (`cd server && npm test`)
+
+## Baustellen-App (bau.html) – Stand 09.11.2026
+- Die Original-App (Artifact) läuft jetzt auf dem eigenen Server: `tools/portiere.py` macht aus `tools/artifact-quelle.html` die Datei `bau.html`; `claude-shim.js` verbindet Datenbank, Dateien, Mail und KI mit dem Server (je Firma getrennt, je Variante begrenzt). Bei jeder neuen Artifact-Version neu portieren.
+- Automatisch geprüft (`server/test/ui/bau-e2e.mjs`, 18 Prüfungen mit echtem Browser): Baustelle anlegen, Bautagebuch (speichern, nach Neuladen sichtbar), Aufgaben, Übersetzung, Information, Bestellungen, To-do-Liste, Arbeitseinteilung, Besprechungsprotokoll, Protokoll intern, Beleg, Anfrage, Schriftverkehr, Dokumente, Mail, Dateispeicher.
+- **Noch NICHT geprüft (in der Testumgebung gesperrt oder braucht echte Konten):** PDF-/Excel-Erzeugung, Leistungsverzeichnis einlesen (Texterkennung), echte Übersetzung und Belegerkennung (braucht `ANTHROPIC_API_KEY`), echter Mailversand mit Anhang (braucht SMTP), Zusammenarbeit mehrerer Nutzer in Echtzeit.
+- **Vor dem Start:** `tools/vendor.sh` auf dem Server ausführen und danach `python3 tools/portiere.py tools/artifact-quelle.html bau.html --lokal` (Bibliotheken vom eigenen Server statt von CDNs, Datenschutz). Dann PDF-Funktionen von Hand durchspielen.
+- **Noch AWR-spezifisch (für andere Firmen anpassen):** Belegesammlung (AWR-Excel-Vorlage, Kontenschlüssel), Nachtrags-Sonderformat Uhlandquartier (greift nur bei Baustellen mit „Uhland“ im Namen). Firmenname, Adresse, Fußzeilen und Rückfrage-Text kommen aus den Firmendaten des Kontos.
 
 ## Noch nicht gegen echte Dienste geprüft (geht erst mit Konten)
 - Stripe live (nur mit Test-Schlüsseln und Testkarte bzw. Test-IBAN prüfen)

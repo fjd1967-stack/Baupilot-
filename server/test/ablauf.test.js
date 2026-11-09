@@ -181,4 +181,50 @@ test('Bestellung mit KI-Assistenten: Summe und Stripe-Position', async () => {
   assert.equal((await call('POST', '/api/auftrag', { ...bestell, email: 'zwei@bau.de', nutzer: 3, ki: 5 }, null, { 'X-Forwarded-For': '9.9.9.9' })).s, 400, 'mehr KI als Nutzer');
   const r = await call('POST', '/api/auftrag', { ...bestell, email: 'zwei@bau.de', nutzer: 3, ki: 2 }, null, { 'X-Forwarded-For': '9.9.9.9' }); assert.equal(r.s, 200); assert.equal(r.j.monatlichNetto, 3990 + 2 * 990 + 2 * 1490);
 });
+
+test('Dokumentenspeicher: je Firma getrennt, Variante begrenzt, Änderungsstand', async () => {
+  const chef = 'sid=tok_neu', m = 'sid=tok_m';
+  assert.equal((await call('PUT', '/api/doc', { pfad: 'projekte/p1/entries/2026-11-09', wert: { text: 'Beton' } }, chef)).s, 200);
+  const l = (await call('GET', '/api/doc/liste?koll=projekte/p1/entries', null, chef)).j; assert.equal(l.docs.length, 1); assert.equal(l.docs[0].data.text, 'Beton');
+  assert.equal((await call('GET', '/api/doc/liste?koll=projekte/p1/entries&stand=' + l.stand, null, chef)).j.unveraendert, true);
+  await call('POST', '/api/doc/update', { pfad: 'projekte/p1/entries/2026-11-09', wert: { wetter: 'Regen' } }, chef);
+  const g = (await call('GET', '/api/doc?pfad=projekte/p1/entries/2026-11-09', null, chef)).j; assert.equal(g.data.text, 'Beton'); assert.equal(g.data.wetter, 'Regen');
+  // Mitarbeiter ist inzwischen Polier: Bautagebuch ja, Leistungsverzeichnis nein
+  assert.equal((await call('PUT', '/api/doc', { pfad: 'projekte/p1/lv/meta', wert: { a: 1 } }, m)).s, 403);
+  assert.equal((await call('GET', '/api/doc/liste?koll=projekte/p1/entries', null, m)).j.docs.length, 1, 'gleiche Firma sieht Eintrag');
+  assert.equal((await call('PUT', '/api/doc', { pfad: '../x/y', wert: {} }, chef)).s, 400);
+  assert.equal((await call('PUT', '/api/doc', { pfad: 'todos/t1', wert: { text: 'x' } })).s, 401);
+  assert.equal((await call('DELETE', '/api/doc', { pfad: 'projekte/p1/entries/2026-11-09' }, chef)).s, 200);
+  assert.equal((await call('GET', '/api/doc/liste?koll=projekte/p1/entries', null, chef)).j.docs.length, 0);
+  // fremde Firma sieht nichts
+  const { hash } = await import('../src/crypto.js');
+  db.prepare("INSERT INTO konto(id,status,firma,nutzer,erstellt) VALUES(77,'aktiv','Fremd',1,1)").run();
+  db.prepare("INSERT INTO nutzer(id,konto,name,kontakt,rolle,variante,erstellt) VALUES(77,77,'Fremd Er','f@fremd.de','chef','bauleiter',1)").run();
+  db.prepare("INSERT INTO sitzung(hash,nutzer,ablauf) VALUES(?,77,?)").run(hash('tok_f'), Date.now() + 1e6);
+  await call('PUT', '/api/doc', { pfad: 'todos/t1', wert: { text: 'geheim' } }, chef);
+  assert.equal((await call('GET', '/api/doc/liste?koll=todos', null, 'sid=tok_f')).j.docs.length, 0);
+});
+
+test('Dateispeicher: hochladen, abrufen, nur eigene Firma, Typ geprüft', async () => {
+  const chef = 'sid=tok_neu';
+  const up = async (typ, inhalt, c) => { const r = await fetch(`http://127.0.0.1:${port}/api/asset`, { method: 'POST', headers: { 'Content-Type': typ, 'X-Dateiname': 'a.pdf', ...(c ? { Cookie: c } : {}) }, body: inhalt }); return { s: r.status, j: await r.json() }; };
+  const r = await up('application/pdf', Buffer.from('%PDF-1.4 test'), chef); assert.equal(r.s, 200);
+  const g = await fetch(`http://127.0.0.1:${port}/_blob/${r.j.id}`, { headers: { Cookie: chef } }); assert.equal(g.status, 200); assert.equal(g.headers.get('content-type'), 'application/pdf'); assert.equal(await g.text(), '%PDF-1.4 test');
+  assert.equal((await fetch(`http://127.0.0.1:${port}/_blob/${r.j.id}`, { headers: { Cookie: 'sid=tok_f' } })).status, 404);
+  assert.equal((await fetch(`http://127.0.0.1:${port}/_blob/${r.j.id}`)).status, 401);
+  assert.equal((await up('text/html', Buffer.from('<script>'), chef)).s, 415);
+  assert.equal((await up('application/pdf', Buffer.from('x'))).s, 401);
+  assert.equal((await call('DELETE', '/api/asset', { id: r.j.id }, chef)).s, 200);
+  assert.equal((await fetch(`http://127.0.0.1:${port}/_blob/${r.j.id}`, { headers: { Cookie: chef } })).status, 404);
+});
+
+test('Mailversand mit Anhang: Prüfung, Postausgang, Reply-To-fähig', async () => {
+  const chef = 'sid=tok_neu';
+  assert.equal((await call('POST', '/api/mail', { to: 'kein-mail', subject: 'x', body: 'y' }, chef)).s, 400);
+  assert.equal((await call('POST', '/api/mail', { to: 'a@b.de', subject: '', body: 'y' }, chef)).s, 400);
+  const r = await call('POST', '/api/mail', { to: 'buch@firma.de; info@firma.de', subject: 'Abrechnung', body: 'siehe Anhang', attachments: [{ filename: 'a.pdf', mimeType: 'application/pdf', content: Buffer.from('pdf').toString('base64') }] }, chef);
+  assert.equal(r.s, 200);
+  const m = db.prepare("SELECT * FROM postausgang WHERE betreff='Abrechnung'").get(); assert.match(m.an, /buch@firma\.de,info@firma\.de/); assert.match(m.text, /a\.pdf/);
+  assert.equal((await call('POST', '/api/mail', { to: 'a@b.de', subject: 'x', body: 'y' })).s, 401);
+});
 test.after(() => srv.close());

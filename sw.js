@@ -1,5 +1,5 @@
 // Minimaler Service Worker: macht die App installierbar und startet auch bei schlechtem Netz.
-const CACHE = 'app-shell-v8';
+const CACHE = 'app-shell-v9';
 const SHELL = ['./', './index.html', './danke.html', './app.html', './style.css', './site.config.js', './install.js', './demo.js', './profil.js', './profil.css', './firma.js', './blaetter.js', './app.js', './team.js', './konto.js', './login.html', './install.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png'];
 
 self.addEventListener('install', e => {
@@ -10,7 +10,7 @@ self.addEventListener('activate', e => {
 });
 self.addEventListener('fetch', e => {
   const req = e.request;
-  if (req.method !== 'GET' || new URL(req.url).origin !== location.origin || new URL(req.url).pathname.startsWith('/api/')) return;
+  if (req.method !== 'GET' || new URL(req.url).origin !== location.origin || new URL(req.url).pathname.startsWith('/api/') || new URL(req.url).pathname.startsWith('/_blob/')) return;
   // Seiten: erst Netz, bei Ausfall Cache. Dateien: erst Cache, im Hintergrund aktualisieren.
   if (req.mode === 'navigate') {
     e.respondWith(fetch(req).then(r => { const c = r.clone(); caches.open(CACHE).then(x => x.put(req, c)); return r; }).catch(() => caches.match(req).then(r => r || caches.match('./index.html'))));

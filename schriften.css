@@ -1,0 +1,2 @@
+/* Systemschriften als Rückfall (keine Google-Fonts-Einbindung, Datenschutz). Eigene Schriftdateien können in fonts/ ergänzt werden. */
+:root{--display:"Arial Narrow","Roboto Condensed",Arial,sans-serif;--body:system-ui,-apple-system,"Segoe UI",Arial,sans-serif}

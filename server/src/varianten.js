@@ -37,3 +37,13 @@ export const EINSTELLUNGEN = {
   uebersetzung: v => Array.isArray(v) && v.length <= 8 && v.every(x => ['sq', 'ro', 'tr', 'pl', 'en', 'el', 'bg'].includes(x)),
   standardtext: v => typeof v === 'string' && v.length <= 500
 };
+
+// Welcher Datenbereich gehört zu welcher Funktion? (Pfad der Sammlung, Platzhalter * = beliebige Baustelle)
+const BEREICHE = [
+  [/^projekte\/[^/]+\/(entries|wetter|fotos)$/, 'bautagebuch'], [/^projekte\/[^/]+\/protokolle$/, 'dokumente'],
+  [/^projekte\/[^/]+\/dokumente$/, 'dokumente'], [/^projekte\/[^/]+\/lv$/, 'lv'], [/^projekte\/[^/]+\/nt$/, 'nachtraege'],
+  [/^projekte\/[^/]+\/belege$/, 'belege'], [/^belege$/, 'belege'], [/^config\/belege$/, 'belege'],
+  [/^(todos|bltodo)$/, 'aufgaben'], [/^infos$/, 'information'], [/^bestellungen$/, 'anfragen'],
+  [/^(sicherungen|archiv|papierkorb)$/, 'sicherung']
+];
+export function bereichFunktion(koll) { for (const [re, f] of BEREICHE) if (re.test(koll)) return f; return null; } // null = für alle angemeldeten Nutzer

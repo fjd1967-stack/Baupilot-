@@ -2,10 +2,11 @@ import http from 'node:http';
 import { db, jetzt } from './db.js';
 import { cfg } from './config.js';
 import { zufall, hash } from './crypto.js';
-import { sende } from './mail.js';
+import { sende, sendeMail } from './mail.js';
 import { api, checkoutDaten, webhookPruefen } from './stripe.js';
 import { auftragHtml, preis } from './auftrag.js';
-import { VARIANTEN, FUNKTIONEN, EINSTELLUNGEN, variante, darf, funktionenVon } from './varianten.js';
+import { VARIANTEN, FUNKTIONEN, EINSTELLUNGEN, variante, darf, funktionenVon, bereichFunktion } from './varianten.js';
+import { randomUUID } from 'node:crypto';
 
 const TAG = 864e5, MIN = 6e4;
 const q = (sql, ...a) => db.prepare(sql).get(...a);
@@ -272,6 +273,86 @@ route('POST', '/api/ki', async (req, b, ip) => {
   return { antwort: String(e.antwort || '').slice(0, 500), einstellungen: neu };
 });
 
+
+// ---- Dokumentenspeicher (Sammlungen/Dokumente je Firma) und Dateispeicher
+const pfadOk = p => typeof p === 'string' && /^[\w.-]{1,80}(\/[\w.-]{1,120}){0,5}$/.test(p) && !p.includes('..');
+function zugriff(u, koll, schreiben) {
+  if (!pfadOk(koll)) throw new Fehler(400, 'Ungültiger Pfad.');
+  const f = bereichFunktion(koll); if (f && !darf(u, f)) throw new Fehler(403, 'Diese Funktion gehört nicht zu deiner Variante.');
+  if (schreiben) braucheAktiv(u);
+}
+const teile = p => { const i = p.lastIndexOf('/'); return i < 0 ? [null, p] : [p.slice(0, i), p.slice(i + 1)]; };
+route('GET', '/api/doc/liste', (req, b, ip, url) => {
+  const u = braucheAnmeldung(req), koll = url.searchParams.get('koll'); zugriff(u, koll, false);
+  const st = q('SELECT COUNT(*) c, COALESCE(MAX(geaendert),0) m FROM dok WHERE konto=? AND koll=?', u.konto, koll), stand = st.c + ':' + st.m;
+  if (url.searchParams.get('stand') === stand) return { unveraendert: true, stand };
+  return { stand, docs: alle('SELECT id, wert FROM dok WHERE konto=? AND koll=? ORDER BY id', u.konto, koll).map(r => ({ id: r.id, data: json(r.wert, {}) })) };
+});
+route('GET', '/api/doc', (req, b, ip, url) => {
+  const u = braucheAnmeldung(req), [koll, id] = teile(url.searchParams.get('pfad') || ''); if (!koll) throw new Fehler(400, 'Ungültiger Pfad.'); zugriff(u, koll, false);
+  const r = q('SELECT wert FROM dok WHERE konto=? AND koll=? AND id=?', u.konto, koll, id); return r ? { vorhanden: true, data: json(r.wert, {}) } : { vorhanden: false };
+});
+const speichern = (u, pfad, wert, mischen) => {
+  const [koll, id] = teile(pfad); if (!koll) throw new Fehler(400, 'Ungültiger Pfad.'); zugriff(u, koll, true);
+  if (wert === null || typeof wert !== 'object' || Array.isArray(wert)) throw new Fehler(400, 'Objekt erwartet.');
+  let neu = wert;
+  if (mischen) { const r = q('SELECT wert FROM dok WHERE konto=? AND koll=? AND id=?', u.konto, koll, id); neu = { ...(r ? json(r.wert, {}) : {}), ...wert }; }
+  const w = JSON.stringify(neu); if (w.length > 4e6) throw new Fehler(413, 'Dokument zu groß.');
+  lauf('INSERT INTO dok(konto,koll,id,wert,geaendert,von) VALUES(?,?,?,?,?,?) ON CONFLICT(konto,koll,id) DO UPDATE SET wert=excluded.wert, geaendert=excluded.geaendert, von=excluded.von', u.konto, koll, id, w, jetzt(), u.id);
+};
+route('PUT', '/api/doc', (req, b) => { speichern(braucheAnmeldung(req), b.pfad, b.wert, false); return { ok: true }; });
+route('POST', '/api/doc/update', (req, b) => { speichern(braucheAnmeldung(req), b.pfad, b.wert, true); return { ok: true }; });
+route('DELETE', '/api/doc', (req, b) => {
+  const u = braucheAnmeldung(req), [koll, id] = teile(b.pfad || ''); if (!koll) throw new Fehler(400, 'Ungültiger Pfad.'); zugriff(u, koll, true);
+  lauf('DELETE FROM dok WHERE konto=? AND koll=? AND id=?', u.konto, koll, id); return { ok: true };
+});
+
+const ASSET_MAX = 25 * 1024 * 1024, KONTO_MAX = 2 * 1024 * 1024 * 1024, ERLAUBT = /^(application\/pdf|image\/(png|jpeg|webp|gif|heic)|application\/json|text\/plain|application\/vnd\.openxmlformats-officedocument\.[\w.]+|application\/zip|application\/octet-stream)$/;
+async function assetHoch(req, u, url) {
+  braucheAktiv(u);
+  const typ = String(req.headers['content-type'] || '').split(';')[0].trim(); if (!ERLAUBT.test(typ)) throw new Fehler(415, 'Dateityp nicht erlaubt.');
+  const roh = await lesenRoh(req, ASSET_MAX); if (!roh.length) throw new Fehler(400, 'Leere Datei.');
+  const belegt = q('SELECT COALESCE(SUM(groesse),0) s FROM asset WHERE konto=?', u.konto).s; if (belegt + roh.length > KONTO_MAX) throw new Fehler(413, 'Speicherplatz voll.');
+  const id = randomUUID().replace(/-/g, ''); const name = norm(decodeURIComponent(String(req.headers['x-dateiname'] || ''))).slice(0, 200);
+  lauf('INSERT INTO asset(id,konto,typ,name,groesse,inhalt,erstellt) VALUES(?,?,?,?,?,?,?)', id, u.konto, typ, name, roh.length, roh, jetzt());
+  return { id, groesse: roh.length };
+}
+route('GET', '/api/asset/liste', req => {
+  const u = braucheAnmeldung(req), a = alle('SELECT id,typ,name,groesse,erstellt FROM asset WHERE konto=? ORDER BY erstellt DESC', u.konto);
+  return { assets: a, usage: { bytes: a.reduce((s, x) => s + x.groesse, 0), maxBytes: KONTO_MAX, files: a.length, maxFiles: 100000 } };
+});
+
+// ---- KI-Aufruf für Übersetzung und Beleg-/Bildauswertung (ersetzt die Claude-Funktion der Artifact-Version)
+route('POST', '/api/sample', async (req, b) => {
+  const u = braucheAnmeldung(req); braucheAktiv(u); begrenze('sample:' + u.id, 300, 60 * MIN);
+  const prompt = norm(b.prompt).slice(0, 20000); if (prompt.length < 3) throw new Fehler(400, 'Text fehlt.');
+  const bilder = (b.bilder || []).slice(0, 4).filter(x => /^image\/(jpeg|png|webp|gif)$/.test(x.typ) && typeof x.daten === 'string');
+  if (cfg.kiMock) return { text: b.json ? '{}' : '[Übersetzung] ' + prompt.slice(-60) };
+  if (!cfg.anthropicKey) throw new Fehler(503, 'Der KI-Dienst ist noch nicht eingerichtet.');
+  const inhalt = [...bilder.map(x => ({ type: 'image', source: { type: 'base64', media_type: x.typ, data: x.daten } })), { type: 'text', text: prompt }];
+  const r = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'x-api-key': cfg.anthropicKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
+    body: JSON.stringify({ model: bilder.length ? cfg.kiModell : cfg.uebersetzModell, max_tokens: 4000, messages: [{ role: 'user', content: inhalt }] }) });
+  if (!r.ok) throw new Fehler(502, 'Der KI-Dienst ist gerade nicht erreichbar.');
+  lauf('INSERT INTO ki_log(nutzer,wunsch,ergebnis,zeit) VALUES(?,?,?,?)', u.id, 'SAMPLE ' + (bilder.length ? 'bild' : 'text'), '', jetzt());
+  return { text: (await r.json()).content?.map(c => c.text || '').join('') || '' };
+});
+route('DELETE', '/api/asset', (req, b) => { const u = braucheAnmeldung(req); braucheAktiv(u); lauf('DELETE FROM asset WHERE id=? AND konto=?', norm(b.id), u.konto); return { ok: true }; });
+
+// ---- Mailversand für die App (Gmail-Ersatz): Absender ist das System, Antworten gehen an den Nutzer
+route('POST', '/api/mail', async (req, b, ip) => {
+  const u = braucheAnmeldung(req); braucheAktiv(u); begrenze('mail:' + u.id, 30, 60 * MIN);
+  const an = [].concat(b.to || []).flatMap(x => String(x).split(/[,;]/)).map(norm).filter(Boolean), cc = [].concat(b.cc || []).flatMap(x => String(x).split(/[,;]/)).map(norm).filter(Boolean);
+  if (!an.length || an.length + cc.length > 15 || ![...an, ...cc].every(mailOk)) throw new Fehler(400, 'Bitte gültige Empfänger angeben (höchstens 15).');
+  const betreff = norm(b.subject).slice(0, 300); if (!betreff) throw new Fehler(400, 'Betreff fehlt.');
+  const anh = (b.attachments || []).slice(0, 10).map(a => ({ name: norm(a.filename).replace(/[^\w. ()-]/g, '_').slice(0, 120) || 'Anhang', typ: ERLAUBT.test(a.mimeType || '') ? a.mimeType : 'application/octet-stream', inhalt: Buffer.from(String(a.content || ''), 'base64') }));
+  if (anh.reduce((s, a) => s + a.inhalt.length, 0) > 20 * 1024 * 1024) throw new Fehler(413, 'Anhänge zu groß (höchstens 20 MB).');
+  const p = json(u.profil), antwort = mailOk(p.email || '') ? p.email : (u.kontakt.includes('@') ? u.kontakt : '');
+  const ok = await sendeMail({ an, cc, betreff, text: String(b.body || ''), html: b.htmlBody ? String(b.htmlBody) : '', antwort, name: u.name + ' (' + u.firma + ')', anh });
+  lauf('INSERT INTO ki_log(nutzer,wunsch,ergebnis,zeit) VALUES(?,?,?,?)', u.id, 'MAIL an ' + an.join(',').slice(0, 200), ok ? 'gesendet' : 'nicht gesendet', jetzt());
+  if (!ok) throw new Fehler(502, 'Die E-Mail konnte nicht gesendet werden.');
+  return { ok: true };
+});
+
 route('GET', '/api/auftrag/dokument', req => {
   const u = braucheChef(req);
   const a = q('SELECT html FROM auftrag WHERE konto=? ORDER BY id DESC LIMIT 1', u.konto);
@@ -301,6 +382,8 @@ export async function webhook(roh, kopf) {
 const kopfZeilen = { 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'same-origin', 'Cache-Control': 'no-store', 'X-Frame-Options': 'DENY' };
 const lesen = (req, max = 65536) => new Promise((ok, fail) => { let d = '', n = 0; req.on('data', c => { n += c.length; if (n > max) { fail(new Fehler(413, 'Zu groß')); req.destroy(); } else d += c; }); req.on('end', () => ok(d)); req.on('error', fail); });
 
+const lesenRoh = (req, max) => new Promise((ok, fail) => { const t = []; let n = 0; req.on('data', c => { n += c.length; if (n > max) { fail(new Fehler(413, 'Zu groß')); req.destroy(); } else t.push(c); }); req.on('end', () => ok(Buffer.concat(t))); req.on('error', fail); });
+const GRENZE = { '/api/sample': 14e6, '/api/doc': 5e6, '/api/doc/update': 5e6, '/api/mail': 35e6 };
 export const handler = async (req, res) => {
   const ip = String(req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').split(',')[0].trim();
   const url = new URL(req.url, 'http://x');
@@ -308,13 +391,18 @@ export const handler = async (req, res) => {
   const senden = (code, obj) => { res.statusCode = code; res.setHeader('Content-Type', 'application/json; charset=utf-8'); res.end(JSON.stringify(obj)); };
   try {
     if (req.method === 'POST' && url.pathname === '/webhook/stripe') return senden(200, await webhook(await lesen(req, 1e6), req.headers['stripe-signature']));
+    if (req.method === 'POST' && url.pathname === '/api/asset') { const o = req.headers.origin; if (o && o !== cfg.baseUrl) throw new Fehler(403, 'Fremde Herkunft.'); return senden(200, await assetHoch(req, braucheAnmeldung(req), url)); }
+    if (req.method === 'GET' && url.pathname.startsWith('/_blob/')) {
+      const u = braucheAnmeldung(req), a = q('SELECT typ,name,inhalt FROM asset WHERE id=? AND konto=?', url.pathname.slice(7), u.konto); if (!a) throw new Fehler(404, 'Nicht gefunden.');
+      res.statusCode = 200; res.setHeader('Content-Type', a.typ); res.setHeader('Content-Disposition', 'inline'); res.setHeader('Cache-Control', 'private, max-age=86400'); return res.end(a.inhalt);
+    }
     const r = routen.find(([m, p]) => m === req.method && p === url.pathname);
     if (!r) throw new Fehler(404, 'Nicht gefunden.');
     let b = {};
     if (req.method !== 'GET') {
       if (!String(req.headers['content-type'] || '').startsWith('application/json')) throw new Fehler(415, 'JSON erwartet.');
       const o = req.headers.origin; if (o && o !== cfg.baseUrl) throw new Fehler(403, 'Fremde Herkunft.');
-      try { b = JSON.parse((await lesen(req)) || '{}'); } catch { throw new Fehler(400, 'Ungültige Daten.'); }
+      try { b = JSON.parse((await lesen(req, GRENZE[url.pathname] || 65536)) || '{}'); } catch { throw new Fehler(400, 'Ungültige Daten.'); }
     }
     const out = await r[2](req, b, ip, url, res);
     if (out?.redirect) { res.statusCode = 303; res.setHeader('Location', out.redirect); return res.end(); }

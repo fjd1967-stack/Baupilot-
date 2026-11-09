@@ -44,6 +44,7 @@
     var d = neuerTab('start', 'Start', [], true), liste = el('div');
     d.appendChild(el('h1', null, 'Hallo ' + me.name.split(' ')[0] + '.'));
     d.appendChild(el('p', 'lead', me.firma + ' · ' + VAR[me.variante] + (me.rolle === 'chef' ? ' (Chef)' : '')));
+    var go = el('a', 'btn gelb gross', 'Baustellen-App öffnen'); go.href = 'bau.html'; d.appendChild(el('div', 'knoepfe', null, [go]));
     d.appendChild(el('h2', 'gruppe', 'Das kannst du in deiner Variante'));
     var aus = einst.ausblenden || [];
     me.funktionen.forEach(function (k) {

@@ -12,6 +12,7 @@ export const cfg = {
   priceKiCent: +e.PRICE_KI_CENT || 1490,
   anthropicKey: e.ANTHROPIC_API_KEY || '',
   kiModell: e.KI_MODELL || 'claude-sonnet-4-5',
+  uebersetzModell: e.UEBERSETZ_MODELL || 'claude-haiku-4-5',
   kiMock: e.KI_MOCK === '1',
   maxUsers: +e.MAX_USERS || 200,
   agbVersion: e.AGB_VERSION || '2026-11-entwurf',
