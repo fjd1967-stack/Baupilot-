@@ -29,6 +29,9 @@ Der Verkauf ist abgeschaltet (`shop: false` in `site.config.js`). Erst wenn alle
 - Docker-Aufbau und Caddy auf dem echten Server
 - Wiederherstellung aus einem Backup (einmal komplett durchspielen!)
 
+## AWR-Belegvorlage für Franks Konto
+`node server/src/firma-setzen.js "<Firmenname>" belegvorlage awr` schaltet die AWR-Excel-Vorlage mit Kontonummern für genau dieses Konto frei; alle anderen Firmen bekommen die neutrale Belegesammlung.
+
 ## Nur du kannst das (Konten und Rechtliches)
 1. **Stripe-Konto** anlegen und Firma verifizieren. Dann in den Einstellungen: Firmenname, Anschrift, USt-IdNr./Steuernummer, Rechnungs-Präfix, "Rechnungen per E-Mail senden", **Stripe Tax** aktivieren (Herkunftsadresse eintragen). Webhook auf `https://DOMAIN/webhook/stripe` mit den Ereignissen `checkout.session.completed`, `invoice.paid`, `invoice.payment_failed`, `customer.subscription.deleted`.
 2. **Hetzner-Konto**, Server mit `deploy/cloud-init.yml` anlegen (SSH-Schlüssel eintragen), Backups aktivieren. Dazu eine Storage Box für das zweite Backup.
