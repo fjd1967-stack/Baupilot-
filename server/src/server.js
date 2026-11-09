@@ -113,7 +113,7 @@ route('POST', '/api/logout', (req, b, ip, url, res) => {
 
 route('GET', '/api/me', req => {
   const u = braucheAnmeldung(req);
-  return { name: u.name, rolle: u.rolle, variante: u.rolle === 'chef' ? 'bauleiter' : variante(u.variante), funktionen: funktionenVon(u), ki: !!u.ki, firma: u.firma, status: u.status, gebucht: u.gebucht, kiGebucht: u.ki_gebucht, angelegt: q('SELECT COUNT(*) c FROM nutzer WHERE konto=?', u.konto).c };
+  return { name: u.name, rolle: u.rolle, variante: u.rolle === 'chef' ? 'bauleiter' : variante(u.variante), funktionen: funktionenVon(u), funktionenText: Object.fromEntries(funktionenVon(u).map(k => [k, FUNKTIONEN[k]])), ki: !!u.ki, firma: u.firma, status: u.status, gebucht: u.gebucht, kiGebucht: u.ki_gebucht, angelegt: q('SELECT COUNT(*) c FROM nutzer WHERE konto=?', u.konto).c };
 });
 
 route('GET', '/api/team', req => {

@@ -8,6 +8,12 @@
 <p class="hilfe">Auf dem iPhone öffnest du diese Seite in Safari. Dann zeigt dir der Knopf die drei Schritte.</p>
 <p><a href="app.html">App direkt öffnen</a></p>
 </main>
+<script>(function(){var t=new URLSearchParams(location.search).get('einladung');if(!t)return;
+var app=(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone;
+var ziel='/api/einladung?t='+encodeURIComponent(t);
+if(app){location.replace(ziel);return}
+document.addEventListener('DOMContentLoaded',function(){var m=document.querySelector('main');var p=document.createElement('p');var a=document.createElement('a');a.className='btn gelb gross';a.href=ziel;a.textContent='Einladung annehmen und im Browser öffnen';p.appendChild(a);m.appendChild(p);var h=document.createElement('p');h.textContent='Tipp: Nimm die Einladung zuerst an und installiere die App danach auf dem Home-Bildschirm.';m.appendChild(h)});
+})();</script>
 <script src="site.config.js"></script><script src="install.js"></script>
 <script>var S=window.SITE||{};if(S.name)document.querySelectorAll('[data-name]').forEach(function(e){e.textContent=S.name});</script>
 </body></html>

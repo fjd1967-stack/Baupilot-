@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Anmelden</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="profil.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="top"><a class="logo" href="./"><i></i><span data-name>BauPilot</span></a></header>
+  <main class="profil">
+    <h1>Anmelden</h1>
+    <p class="lead">Gib deine E-Mail-Adresse ein. Du bekommst einen Link, mit dem du dich anmeldest. Ein Passwort brauchst du nicht. Mitarbeiter ohne E-Mail öffnen den Einladungslink vom Chef.</p>
+    <form id="lf" novalidate>
+      <div class="feld"><label for="mail">E-Mail</label><input id="mail" type="email" inputmode="email" autocomplete="email" required><p class="fehler" id="e-mail" role="alert"></p></div>
+      <div class="knoepfe"><button class="btn gelb gross" type="submit" id="los">Link senden</button></div>
+      <p class="hilfe ok" id="ok" role="status"></p>
+    </form>
+  </main>
+</div>
+<script src="site.config.js"></script>
+<script>
+(function(){
+  var $=function(i){return document.getElementById(i)};
+  document.querySelectorAll('[data-name]').forEach(function(e){e.textContent=(window.SITE||{}).name||'BauPilot'});
+  $('lf').addEventListener('submit',function(ev){
+    ev.preventDefault();var m=$('mail').value.trim().toLowerCase();$('ok').textContent='';
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(m)){$('e-mail').textContent='Bitte gib eine gültige E-Mail-Adresse ein.';return}
+    $('e-mail').textContent='';$('los').disabled=true;
+    fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:m})})
+      .then(function(r){return r.json().then(function(j){return{s:r.status,j:j}})})
+      .then(function(r){if(r.s===200)$('ok').textContent='Wenn es ein Konto gibt, ist der Link unterwegs. Er gilt 15 Minuten.';else $('e-mail').textContent=r.j.fehler||'Das hat nicht geklappt.';$('los').disabled=false})
+      .catch(function(){$('e-mail').textContent='Keine Verbindung.';$('los').disabled=false});
+  });
+})();
+</script>
+</body>
+</html>
