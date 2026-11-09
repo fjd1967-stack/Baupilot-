@@ -8,7 +8,7 @@
   var ME = sync('/api/me') || { name: 'Gast', firma: '', rolle: 'mitglied', funktionen: [], variante: 'polier' };
   var FD = sync('/api/firma') || {}, PR = sync('/api/profil') || {};
   ROLLE.chef = ME.rolle === 'chef';
-  var F = { name: FD.name || ME.firma || '', strasse: FD.strasse || '', plz: FD.plz || '', ort: FD.ort || '', tel: FD.tel || '', fax: FD.fax || '', mail: FD.mail || '', web: FD.web || '' };
+  var F = { name: FD.name || ME.firma || '', strasse: FD.strasse || '', plz: FD.plz || '', ort: FD.ort || '', tel: FD.tel || '', fax: FD.fax || '', belegvorlage: FD.belegvorlage || '', belegkategorien: FD.belegkategorien, mail: FD.mail || '', web: FD.web || '' };
   window.__ME = ME; window.__F = F;
   window.__RUECK = 'Rückfragen und Rückantwort bitte an ' + ME.name + (PR.handy ? ', T: ' + PR.handy : '') + ((PR.email || ME.rolle === 'chef' && F.mail) ? ', E-Mail: ' + (PR.email || F.mail) : '') + '.';
   window.__FUSS1 = (F.name + '  •  ' + F.strasse + '  •  ' + F.plz + ' ' + F.ort).toUpperCase().replace(/GMBH/, 'GmbH');

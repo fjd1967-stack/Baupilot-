@@ -7,6 +7,7 @@ import { api, checkoutDaten, webhookPruefen } from './stripe.js';
 import { auftragHtml, preis } from './auftrag.js';
 import { VARIANTEN, FUNKTIONEN, EINSTELLUNGEN, variante, darf, funktionenVon, bereichFunktion } from './varianten.js';
 import { randomUUID } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 
 const TAG = 864e5, MIN = 6e4;
 const q = (sql, ...a) => db.prepare(sql).get(...a);
@@ -201,7 +202,7 @@ route('POST', '/api/abo/ki', async (req, b) => {
 });
 
 const PROFIL = ['vorname', 'nachname', 'funktion', 'geburt', 'handy', 'email'];
-const FIRMA = ['name', 'form', 'strasse', 'plz', 'ort', 'tel', 'mail', 'web', 'gf', 'ust', 'steuer', 'hr', 'iban'];
+const FIRMA = ['name', 'form', 'strasse', 'plz', 'ort', 'tel', 'fax', 'mail', 'web', 'gf', 'ust', 'steuer', 'hr', 'iban', 'belegvorlage'];
 const filter = (liste, o) => Object.fromEntries(liste.filter(k => o?.[k] !== undefined).map(k => [k, norm(o[k]).slice(0, 200)]));
 const json = (s, f = {}) => { try { return JSON.parse(s); } catch { return f; } };
 
@@ -215,6 +216,13 @@ route('POST', '/api/profil', (req, b) => {
 });
 route('DELETE', '/api/profil', req => { const u = braucheAnmeldung(req); lauf("UPDATE nutzer SET profil='{}' WHERE id=?", u.id); lauf('DELETE FROM daten WHERE nutzer=?', u.id); return { ok: true }; });
 
+// Firmenspezifische Vorlagen (z. B. Excel-Formblatt der Buchhaltung): nur für Konten, bei denen sie freigeschaltet sind
+route('GET', '/api/vorlage/belege', req => {
+  const u = braucheAnmeldung(req); if (!darf(u, 'belege')) throw new Fehler(403, 'Nicht freigeschaltet.');
+  const f = json(q('SELECT firmendaten FROM konto WHERE id=?', u.konto).firmendaten);
+  if (f.belegvorlage !== 'awr') throw new Fehler(404, 'Keine Vorlage hinterlegt.');
+  try { return { _roh: readFileSync(new URL('../vorlagen/belege-awr.b64', import.meta.url), 'utf8') }; } catch { throw new Fehler(404, 'Keine Vorlage hinterlegt.'); }
+});
 route('GET', '/api/firma', req => { const u = braucheAnmeldung(req); return json(q('SELECT firmendaten FROM konto WHERE id=?', u.konto).firmendaten); });
 route('POST', '/api/firma', (req, b) => {
   const u = braucheChef(req), p = filter(FIRMA, b);
@@ -406,6 +414,7 @@ export const handler = async (req, res) => {
     }
     const out = await r[2](req, b, ip, url, res);
     if (out?.redirect) { res.statusCode = 303; res.setHeader('Location', out.redirect); return res.end(); }
+    if (out?._roh !== undefined) { res.statusCode = 200; res.setHeader('Content-Type', 'text/plain; charset=utf-8'); return res.end(out._roh); }
     senden(200, out);
   } catch (e) {
     if (e instanceof Fehler) return senden(e.code, { fehler: e.message });

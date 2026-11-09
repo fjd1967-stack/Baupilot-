@@ -19,7 +19,7 @@ ers('<link rel="preconnect" href="https://fonts.googleapis.com">\n', '', 'font1'
 ers('<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n', '', 'font2')
 ers(re.escape('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">')+'\n', '<link rel="stylesheet" href="schriften.css">\n', 'font3', True, 1)
 # Brücke zur Laufzeit zuerst laden
-ers('<body>', '<body>\n<script src="claude-shim.js"></script>', 'shim', soll=1)
+ers('<body>', '<body>\n<script src="claude-shim.js"></script>\n<script src="bau-ext.js"></script>', 'shim', soll=1)
 # App-Adresse
 ers("const APP_URL = 'https://claude.ai/artifact/DnKQtsFhyThiPab2mngM5q';", "const APP_URL = location.origin + '/bau.html';", 'appurl', soll=1)
 # Firmendaten aus dem Konto statt fest verdrahtet
@@ -37,6 +37,20 @@ ers("'Tel. +49 26 30 / 96 26-0  •  Fax +49 26 30 / 96 26-26  •  info@awr-abb
 ers("firma:'AWR Abbruch GmbH'", 'firma:__F.name', 'firma', soll=1)
 ers("BauPilot – Bautagebuch und Baustellen-App von AWR", "BauPilot – Baustellen-App von ' + __F.name + '", 'share')
 ers("if(!loadedEntries || !loadedProjects || !canWrite || !activeId) return;\n  const t = todayKey();", "if(!loadedEntries || !loadedProjects || !canWrite || !activeId || !(__ME.rolle==='chef'||__ME.funktionen.indexOf('bautagebuch')>=0)) return;\n  const t = todayKey();", 'ensure', soll=1)
+# Belegesammlung: AWR-Vorlage und AWR-Konten nur für freigeschaltete Firma, sonst allgemeine Fassung
+tpl = re.search(r"const BELEG_TPL_B64 = '([^']*)';", s)
+if tpl:
+    import os
+    os.makedirs(os.path.join(os.path.dirname(os.path.abspath(dst)), 'server', 'vorlagen'), exist_ok=True)
+    open(os.path.join(os.path.dirname(os.path.abspath(dst)), 'server', 'vorlagen', 'belege-awr.b64'), 'w').write(tpl.group(1))
+    s = s.replace(tpl.group(0), "let BELEG_TPL_B64 = '';\nconst __tpl = async () => { if(!BELEG_TPL_B64){ const r = await fetch('/api/vorlage/belege', {credentials:'same-origin'}); if(!r.ok) throw new Error('Excel-Vorlage nicht verfügbar'); BELEG_TPL_B64 = (await r.text()).trim(); } return BELEG_TPL_B64; };")
+    n['tpl'] = 1
+ers("const BAR = [\n", "const BAR_AWR = [\n", 'bar1', soll=1)
+ers("{k:'porto', n:'Porto', konto:'4910', kst:'2', st:'98', h:'Kostenstelle 2'}];", "{k:'porto', n:'Porto', konto:'4910', kst:'2', st:'98', h:'Kostenstelle 2'}];\nconst BAR_STD = [{k:'diesel',n:'Kraftstoff',konto:'',kst:'',st:'9',h:'Kostenstelle des Fahrzeugs'},{k:'wasche',n:'Fahrzeugwäsche',konto:'',kst:'',st:'9',h:'Kostenstelle des Fahrzeugs'},{k:'park',n:'Parkgebühren',konto:'',kst:'',st:'9',h:''},{k:'buero',n:'Einkäufe Büro',konto:'',kst:'',st:'9',h:''},{k:'baustelle',n:'Einkäufe Baustelle',konto:'',kst:'@',st:'9',h:'Kostenstelle der Baustelle'},{k:'porto',n:'Porto',konto:'',kst:'',st:'98',h:''},{k:'sonst',n:'Sonstiges',konto:'',kst:'',st:'9',h:''}];\nconst BAR = __F.belegvorlage==='awr' ? BAR_AWR : (Array.isArray(__F.belegkategorien)&&__F.belegkategorien.length ? __F.belegkategorien : BAR_STD);", 'bar2', soll=1)
+ers("  if(!window.JSZip) throw new Error('ZIP-Modul nicht geladen');\n  const list = belegFiltered()", "  const list = belegFiltered()", 'jszipchk', soll=1)
+ers("return await barFillXlsx(BELEG_TPL_B64, {name:pma||'', pnr:ppn||'', rows:barRows(list, pma), erstellt:fmtDate(todayKey())});", "const DD = {name:pma||'', pnr:ppn||'', firma:__F.name, rows:barRows(list, pma), erstellt:fmtDate(todayKey())};\n  if(__F.belegvorlage!=='awr') return window.__xlsxGeneric(DD);\n  if(!window.JSZip) throw new Error('ZIP-Modul nicht geladen');\n  return await barFillXlsx(await __tpl(), DD);", 'xlsxcall', soll=1)
+ers("z. B. Entkernungsarbeiten 4.OG BT1 – Fa. AWR", "z. B. Betonarbeiten 4.OG", 'ph')
+ers("Barauslagenabrechnung (AWR-Vorlage)", "Barauslagenabrechnung", 'awrk')
 # Funktionen je Variante: nicht freigeschaltete Rubriken ausblenden (der Server sperrt die Daten zusätzlich)
 gate = """<script>(function(){var M={bt:'bautagebuch',bespr:'dokumente',intern:'dokumente',todo:'aufgaben',info:'information',ae:'arbeitseinteilung',order:'anfragen',bl:'aufgaben',doku:'dokumente',schrift:'dokumente',anfr:'anfragen',belege:'belege'};
 function gate(){var f=(window.__ME&&__ME.funktionen)||[];document.querySelectorAll('#rubs [data-rub]').forEach(function(b){var k=M[b.dataset.rub];if(k&&f.indexOf(k)<0)b.style.display='none'})}

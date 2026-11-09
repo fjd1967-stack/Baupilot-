@@ -227,4 +227,12 @@ test('Mailversand mit Anhang: Prüfung, Postausgang, Reply-To-fähig', async () 
   const m = db.prepare("SELECT * FROM postausgang WHERE betreff='Abrechnung'").get(); assert.match(m.an, /buch@firma\.de,info@firma\.de/); assert.match(m.text, /a\.pdf/);
   assert.equal((await call('POST', '/api/mail', { to: 'a@b.de', subject: 'x', body: 'y' })).s, 401);
 });
+test('Belegvorlage nur für freigeschaltete Konten', async () => {
+  const chef = 'sid=tok_neu', roh = () => fetch(`http://127.0.0.1:${port}/api/vorlage/belege`, { headers: { Cookie: chef } });
+  assert.equal((await roh()).status, 404);
+  assert.equal((await call('POST', '/api/firma', { belegvorlage: 'awr' }, chef)).s, 200);
+  const r = await roh(); assert.equal(r.status, 200); assert.ok((await r.text()).length > 1000);
+  assert.equal((await fetch(`http://127.0.0.1:${port}/api/vorlage/belege`)).status, 401);
+  await call('POST', '/api/firma', { belegvorlage: '' }, chef);
+});
 test.after(() => srv.close());
