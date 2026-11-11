@@ -5177,7 +5177,7 @@ function onTodos(docs){
 }
 const tgone = new Set();
 function updateTodoBadge(){ const b = document.querySelector('#rubs [data-rub=todo]'); if(!b) return; const n = todoDueCount(); b.textContent = 'Aufgaben' + (n ? `  ·  ${n} fällig` : ''); }
-const TRL=[['sq','Shqip','Albanisch'],['ro','Română','Rumänisch'],['tr','Türkçe','Türkisch'],['pl','Polski','Polnisch'],['en','English','Englisch'],['el','Ελληνικά','Griechisch'],['bg','Български','Bulgarisch']];
+const TRL=[['sq','Shqip','Albanisch'],['ro','Română','Rumänisch'],['tr','Türkçe','Türkisch'],['pl','Polski','Polnisch'],['en','English','Englisch'],['el','Ελληνικά','Griechisch'],['bg','Български','Bulgarisch'],['es','Español','Spanisch']];
 function trUrl(tl,text){ let x=String(text||''); while(x.length>20 && encodeURIComponent(x).length>3800) x=x.slice(0,Math.floor(x.length*.9)); return 'https://translate.google.com/?sl=auto&tl='+tl+'&op=translate&text='+encodeURIComponent(x); }
 const trSel = {};
 const schedT = d => { try{ if(typeof infos!=='undefined' && d && infos.get(d.id)===d) return scheduleInfo(d.id); }catch(_){} return scheduleTodo(d.id); };

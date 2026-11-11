@@ -1,5 +1,5 @@
-/* Wörterbuch Oberfläche: Deutsch -> sq, ro, tr, pl, en, el, bg. Alles, was hier fehlt, übersetzt der Server einmal und speichert es für alle. */
-window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: [
+/* Wörterbuch Oberfläche: Deutsch -> sq, ro, tr, pl, en, el, bg, es. Alles, was hier fehlt, übersetzt der Server einmal und speichert es für alle. */
+window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg','es'], zeilen: [
 [
 "Bautagebuch",
 "Ditari i ndërtimit",
@@ -8,7 +8,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Dziennik budowy",
 "Site diary",
 "Ημερολόγιο εργοταξίου",
-"Строителен дневник"
+"Строителен дневник",
+"Diario de obra"
 ],
 [
 "Besprechungsprotokoll",
@@ -18,7 +19,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Protokół ze spotkania",
 "Meeting minutes",
 "Πρακτικά σύσκεψης",
-"Протокол от среща"
+"Протокол от среща",
+"Acta de reunión"
 ],
 [
 "Protokoll intern",
@@ -28,7 +30,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Protokół wewnętrzny",
 "Internal minutes",
 "Εσωτερικό πρακτικό",
-"Вътрешен протокол"
+"Вътрешен протокол",
+"Acta interna"
 ],
 [
 "Aufgaben",
@@ -38,7 +41,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Zadania",
 "Tasks",
 "Εργασίες",
-"Задачи"
+"Задачи",
+"Tareas"
 ],
 [
 "Information",
@@ -48,7 +52,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Informacja",
 "Information",
 "Πληροφορίες",
-"Информация"
+"Информация",
+"Información"
 ],
 [
 "Arbeitseinteilung",
@@ -58,7 +63,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Podział pracy",
 "Work schedule",
 "Κατανομή εργασιών",
-"Разпределение на работата"
+"Разпределение на работата",
+"Reparto del trabajo"
 ],
 [
 "Bestellungen",
@@ -68,7 +74,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Zamówienia",
 "Orders",
 "Παραγγελίες",
-"Поръчки"
+"Поръчки",
+"Pedidos"
 ],
 [
 "To-do-Liste",
@@ -78,7 +85,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Lista rzeczy do zrobienia",
 "To-do list",
 "Λίστα εκκρεμοτήτων",
-"Списък със задачи"
+"Списък със задачи",
+"Lista de tareas"
 ],
 [
 "Dokumente",
@@ -88,7 +96,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Dokumenty",
 "Documents",
 "Έγγραφα",
-"Документи"
+"Документи",
+"Documentos"
 ],
 [
 "Schriftverkehr",
@@ -98,7 +107,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Korespondencja",
 "Correspondence",
 "Αλληλογραφία",
-"Кореспонденция"
+"Кореспонденция",
+"Correspondencia"
 ],
 [
 "Anfragen",
@@ -108,7 +118,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Zapytania",
 "Inquiries",
 "Αιτήματα προσφοράς",
-"Запитвания"
+"Запитвания",
+"Solicitudes de oferta"
 ],
 [
 "Belegesammlung",
@@ -118,7 +129,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Zbiór paragonów",
 "Receipt collection",
 "Συλλογή αποδείξεων",
-"Събиране на касови бележки"
+"Събиране на касови бележки",
+"Recopilación de recibos"
 ],
 [
 "Baustelle wählen",
@@ -128,7 +140,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Wybierz budowę",
 "Choose site",
 "Επιλέξτε εργοτάξιο",
-"Избери обект"
+"Избери обект",
+"Elegir obra"
 ],
 [
 "← Hauptmenü",
@@ -138,7 +151,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "← Menu główne",
 "← Main menu",
 "← Κύριο μενού",
-"← Главно меню"
+"← Главно меню",
+"← Menú principal"
 ],
 [
 "Abbrechen",
@@ -148,7 +162,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Anuluj",
 "Cancel",
 "Ακύρωση",
-"Отказ"
+"Отказ",
+"Cancelar"
 ],
 [
 "Speichern",
@@ -158,7 +173,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Zapisz",
 "Save",
 "Αποθήκευση",
-"Запази"
+"Запази",
+"Guardar"
 ],
 [
 "Schließen",
@@ -168,7 +184,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Zamknij",
 "Close",
 "Κλείσιμο",
-"Затвори"
+"Затвори",
+"Cerrar"
 ],
 [
 "✕ Schließen",
@@ -178,7 +195,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "✕ Zamknij",
 "✕ Close",
 "✕ Κλείσιμο",
-"✕ Затвори"
+"✕ Затвори",
+"✕ Cerrar"
 ],
 [
 "Löschen",
@@ -188,7 +206,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Usuń",
 "Delete",
 "Διαγραφή",
-"Изтрий"
+"Изтрий",
+"Eliminar"
 ],
 [
 "Entfernen",
@@ -198,7 +217,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Usuń",
 "Remove",
 "Αφαίρεση",
-"Премахни"
+"Премахни",
+"Quitar"
 ],
 [
 "← Zurück",
@@ -208,7 +228,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "← Wstecz",
 "← Back",
 "← Πίσω",
-"← Назад"
+"← Назад",
+"← Atrás"
 ],
 [
 "Datum",
@@ -218,7 +239,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Data",
 "Date",
 "Ημερομηνία",
-"Дата"
+"Дата",
+"Fecha"
 ],
 [
 "Name",
@@ -228,7 +250,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Nazwa",
 "Name",
 "Όνομα",
-"Име"
+"Име",
+"Nombre"
 ],
 [
 "Firma",
@@ -238,7 +261,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Firma",
 "Company",
 "Εταιρεία",
-"Фирма"
+"Фирма",
+"Empresa"
 ],
 [
 "Ort",
@@ -248,7 +272,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Miejsce",
 "Location",
 "Τοποθεσία",
-"Място"
+"Място",
+"Lugar"
 ],
 [
 "Fotos",
@@ -258,7 +283,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Zdjęcia",
 "Photos",
 "Φωτογραφίες",
-"Снимки"
+"Снимки",
+"Fotos"
 ],
 [
 "Fotos hinzufügen",
@@ -268,7 +294,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Dodaj zdjęcia",
 "Add photos",
 "Προσθήκη φωτογραφιών",
-"Добави снимки"
+"Добави снимки",
+"Añadir fotos"
 ],
 [
 "Text",
@@ -278,7 +305,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Tekst",
 "Text",
 "Κείμενο",
-"Текст"
+"Текст",
+"Texto"
 ],
 [
 "Summe",
@@ -288,7 +316,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Suma",
 "Total",
 "Σύνολο",
-"Сума"
+"Сума",
+"Total"
 ],
 [
 "Menge",
@@ -298,7 +327,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Ilość",
 "Quantity",
 "Ποσότητα",
-"Количество"
+"Количество",
+"Cantidad"
 ],
 [
 "Einheit",
@@ -308,7 +338,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Jednostka",
 "Unit",
 "Μονάδα",
-"Единица"
+"Единица",
+"Unidad"
 ],
 [
 "Archiv",
@@ -318,7 +349,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Archiwum",
 "Archive",
 "Αρχείο",
-"Архив"
+"Архив",
+"Archivo"
 ],
 [
 "Papierkorb",
@@ -328,7 +360,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Kosz",
 "Trash",
 "Κάδος απορριμμάτων",
-"Кошче"
+"Кошче",
+"Papelera"
 ],
 [
 "Verlauf",
@@ -338,7 +371,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Historia",
 "History",
 "Ιστορικό",
-"История"
+"История",
+"Historial"
 ],
 [
 "Tag",
@@ -348,7 +382,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Dzień",
 "Day",
 "Ημέρα",
-"Ден"
+"Ден",
+"Día"
 ],
 [
 "Erledigt",
@@ -358,7 +393,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Zrobione",
 "Done",
 "Ολοκληρώθηκε",
-"Изпълнено"
+"Изпълнено",
+"Hecho"
 ],
 [
 "offen",
@@ -368,7 +404,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "otwarte",
 "open",
 "ανοιχτό",
-"отворено"
+"отворено",
+"abierto"
 ],
 [
 "in Arbeit",
@@ -378,7 +415,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "w toku",
 "in progress",
 "σε εξέλιξη",
-"в процес"
+"в процес",
+"en curso"
 ],
 [
 "Alle",
@@ -388,7 +426,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Wszystkie",
 "All",
 "Όλα",
-"Всички"
+"Всички",
+"Todos"
 ],
 [
 "Diktieren",
@@ -398,7 +437,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Dyktuj",
 "Dictate",
 "Υπαγόρευση",
-"Диктувай"
+"Диктувай",
+"Dictar"
 ],
 [
 "Per E-Mail senden",
@@ -408,7 +448,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Wyślij e-mailem",
 "Send by e-mail",
 "Αποστολή με email",
-"Изпрати по имейл"
+"Изпрати по имейл",
+"Enviar por correo electrónico"
 ],
 [
 "Direkt senden",
@@ -418,7 +459,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Wyślij od razu",
 "Send now",
 "Άμεση αποστολή",
-"Изпрати директно"
+"Изпрати директно",
+"Enviar ahora"
 ],
 [
 "PDF speichern",
@@ -428,7 +470,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Zapisz PDF",
 "Save PDF",
 "Αποθήκευση PDF",
-"Запази PDF"
+"Запази PDF",
+"Guardar PDF"
 ],
 [
 "Druckvorschau",
@@ -438,7 +481,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Podgląd wydruku",
 "Print preview",
 "Προεπισκόπηση εκτύπωσης",
-"Преглед за печат"
+"Преглед за печат",
+"Vista previa de impresión"
 ],
 [
 "Per WhatsApp senden",
@@ -448,7 +492,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Wyślij przez WhatsApp",
 "Send via WhatsApp",
 "Αποστολή μέσω WhatsApp",
-"Изпрати през WhatsApp"
+"Изпрати през WhatsApp",
+"Enviar por WhatsApp"
 ],
 [
 "Neu schreiben",
@@ -458,7 +503,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Napisz od nowa",
 "Write again",
 "Γράψτε ξανά",
-"Напиши наново"
+"Напиши наново",
+"Escribir de nuevo"
 ],
 [
 "Unterschrift",
@@ -468,7 +514,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Podpis",
 "Signature",
 "Υπογραφή",
-"Подпис"
+"Подпис",
+"Firma"
 ],
 [
 "Unterschriften",
@@ -478,7 +525,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Podpisy",
 "Signatures",
 "Υπογραφές",
-"Подписи"
+"Подписи",
+"Firmas"
 ],
 [
 "Betreff",
@@ -488,7 +536,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Temat",
 "Subject",
 "Θέμα",
-"Относно"
+"Относно",
+"Asunto"
 ],
 [
 "Bemerkungen",
@@ -498,7 +547,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Uwagi",
 "Remarks",
 "Παρατηρήσεις",
-"Забележки"
+"Забележки",
+"Observaciones"
 ],
 [
 "Anzahl",
@@ -508,7 +558,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Liczba",
 "Number",
 "Αριθμός",
-"Брой"
+"Брой",
+"Número"
 ],
 [
 "Stunden",
@@ -518,7 +569,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Godziny",
 "Hours",
 "Ώρες",
-"Часове"
+"Часове",
+"Horas"
 ],
 [
 "Länge",
@@ -528,7 +580,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Długość",
 "Length",
 "Μήκος",
-"Дължина"
+"Дължина",
+"Longitud"
 ],
 [
 "Breite",
@@ -538,7 +591,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Szerokość",
 "Width",
 "Πλάτος",
-"Ширина"
+"Ширина",
+"Anchura"
 ],
 [
 "Höhe",
@@ -548,7 +602,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Wysokość",
 "Height",
 "Ύψος",
-"Височина"
+"Височина",
+"Altura"
 ],
 [
 "+ Neue Baustelle",
@@ -558,7 +613,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "+ Nowa budowa",
 "+ New site",
 "+ Νέο εργοτάξιο",
-"+ Нов обект"
+"+ Нов обект",
+"+ Nueva obra"
 ],
 [
 "Abmelden",
@@ -568,7 +624,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Wyloguj",
 "Log out",
 "Αποσύνδεση",
-"Изход"
+"Изход",
+"Cerrar sesión"
 ],
 [
 "Start",
@@ -578,7 +635,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Start",
 "Start",
 "Αρχή",
-"Начало"
+"Начало",
+"Inicio"
 ],
 [
 "Baustellen-App öffnen",
@@ -588,7 +646,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Otwórz aplikację budowy",
 "Open the site app",
 "Άνοιγμα της εφαρμογής εργοταξίου",
-"Отвори приложението за обекта"
+"Отвори приложението за обекта",
+"Abrir la app de obra"
 ],
 [
 "Anmelden",
@@ -598,7 +657,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Zaloguj się",
 "Log in",
 "Σύνδεση",
-"Вход"
+"Вход",
+"Iniciar sesión"
 ],
 [
 "Link senden",
@@ -608,7 +668,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Wyślij link",
 "Send link",
 "Αποστολή συνδέσμου",
-"Изпрати връзка"
+"Изпрати връзка",
+"Enviar enlace"
 ],
 [
 "E-Mail",
@@ -618,7 +679,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "E-mail",
 "Email",
 "Email",
-"Имейл"
+"Имейл",
+"Correo electrónico"
 ],
 [
 "Funktion",
@@ -628,7 +690,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Funkcja",
 "Role",
 "Ρόλος",
-"Длъжност"
+"Длъжност",
+"Función"
 ],
 [
 "Lohn",
@@ -638,7 +701,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Robocizna",
 "Labour",
 "Εργασία",
-"Труд"
+"Труд",
+"Mano de obra"
 ],
 [
 "Maschinen / Geräte",
@@ -648,7 +712,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Maszyny / sprzęt",
 "Machines / equipment",
 "Μηχανήματα / εξοπλισμός",
-"Машини / оборудване"
+"Машини / оборудване",
+"Maquinaria / equipos"
 ],
 [
 "Material",
@@ -658,7 +723,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Materiał",
 "Material",
 "Υλικό",
-"Материал"
+"Материал",
+"Material"
 ],
 [
 "Suchen",
@@ -668,7 +734,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Szukaj",
 "Search",
 "Αναζήτηση",
-"Търсене"
+"Търсене",
+"Buscar"
 ],
 [
 "Wiederherstellen",
@@ -678,7 +745,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Przywróć",
 "Restore",
 "Επαναφορά",
-"Възстанови"
+"Възстанови",
+"Restaurar"
 ],
 [
 "✓ Übernehmen",
@@ -688,7 +756,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "✓ Zatwierdź",
 "✓ Apply",
 "✓ Εφαρμογή",
-"✓ Приеми"
+"✓ Приеми",
+"✓ Aplicar"
 ],
 [
 "+ Neuer Eintrag",
@@ -698,7 +767,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "+ Nowy wpis",
 "+ New entry",
 "+ Νέα καταχώριση",
-"+ Нов запис"
+"+ Нов запис",
+"+ Nueva entrada"
 ],
 [
 "Datei wählen",
@@ -708,7 +778,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Wybierz plik",
 "Choose file",
 "Επιλογή αρχείου",
-"Избери файл"
+"Избери файл",
+"Elegir archivo"
 ],
 [
 "Ersteller",
@@ -718,7 +789,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Autor",
 "Author",
 "Δημιουργός",
-"Автор"
+"Автор",
+"Autor"
 ],
 [
 "Verteiler",
@@ -728,7 +800,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Lista odbiorców",
 "Distribution list",
 "Λίστα διανομής",
-"Списък за разпращане"
+"Списък за разпращане",
+"Lista de distribución"
 ],
 [
 "Erinnerung",
@@ -738,7 +811,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Przypomnienie",
 "Reminder",
 "Υπενθύμιση",
-"Напомняне"
+"Напомняне",
+"Recordatorio"
 ],
 [
 "Aufgabe",
@@ -748,7 +822,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Zadanie",
 "Task",
 "Εργασία",
-"Задача"
+"Задача",
+"Tarea"
 ],
 [
 "Bestellung",
@@ -758,7 +833,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Zamówienie",
 "Order",
 "Παραγγελία",
-"Поръчка"
+"Поръчка",
+"Pedido"
 ],
 [
 "Leistungsverzeichnis",
@@ -768,7 +844,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Wykaz robót",
 "Bill of quantities",
 "Τιμολόγιο εργασιών",
-"Количествена сметка"
+"Количествена сметка",
+"Pliego de condiciones"
 ],
 [
 "Betrag in €",
@@ -778,7 +855,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Kwota w €",
 "Amount in €",
 "Ποσό σε €",
-"Сума в €"
+"Сума в €",
+"Importe en €"
 ],
 [
 "Excel speichern",
@@ -788,7 +866,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Zapisz Excel",
 "Save Excel",
 "Αποθήκευση Excel",
-"Запази Excel"
+"Запази Excel",
+"Guardar Excel"
 ],
 [
 "Ja, endgültig löschen",
@@ -798,7 +877,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Tak, usuń na stałe",
 "Yes, delete permanently",
 "Ναι, οριστική διαγραφή",
-"Да, изтрий завинаги"
+"Да, изтрий завинаги",
+"Sí, eliminar definitivamente"
 ],
 [
 "Profil",
@@ -808,7 +888,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Profil",
 "Profile",
 "Προφίλ",
-"Профил"
+"Профил",
+"Perfil"
 ],
 [
 "Team",
@@ -818,7 +899,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Zespół",
 "Team",
 "Ομάδα",
-"Екип"
+"Екип",
+"Equipo"
 ],
 [
 "Assistent",
@@ -828,7 +910,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Asystent",
 "Assistant",
 "Βοηθός",
-"Асистент"
+"Асистент",
+"Asistente"
 ],
 [
 "Sprache",
@@ -838,7 +921,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Język",
 "Language",
 "Γλώσσα",
-"Език"
+"Език",
+"Idioma"
 ],
 [
 "Hilfe",
@@ -848,7 +932,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Pomoc",
 "Help",
 "Βοήθεια",
-"Помощ"
+"Помощ",
+"Ayuda"
 ],
 [
 "Weiter",
@@ -858,7 +943,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Dalej",
 "Continue",
 "Συνέχεια",
-"Напред"
+"Напред",
+"Continuar"
 ],
 [
 "Ja",
@@ -868,7 +954,8 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Tak",
 "Yes",
 "Ναι",
-"Да"
+"Да",
+"Sí"
 ],
 [
 "Nein",
@@ -878,6 +965,7 @@ window.WOERTER = { sprachen: ['de','sq','ro','tr','pl','en','el','bg'], zeilen: 
 "Nie",
 "No",
 "Όχι",
-"Не"
+"Не",
+"No"
 ]
 ] };

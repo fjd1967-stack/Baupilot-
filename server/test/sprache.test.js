@@ -31,6 +31,7 @@ test('Chef legt Mitarbeiter mit Sprache an und ändert sie', async () => {
   const r = await call('POST', '/api/team', { name: 'Marek Nowak', kontakt: '0172 9912345', sprache: 'pl' }, C); assert.equal(r.s, 200);
   const t = (await call('GET', '/api/team', null, C)).j.nutzer; assert.equal(t.find(x => x.name === 'Marek Nowak').sprache, 'pl');
   assert.equal((await call('POST', '/api/team/aendern', { id: r.j.id, sprache: 'ro' }, C)).j.sprache, 'ro');
+  assert.equal((await call('POST', '/api/team/aendern', { id: r.j.id, sprache: 'es' }, C)).j.sprache, 'es');
   assert.equal((await call('POST', '/api/team/aendern', { id: r.j.id, sprache: 'xx' }, C)).s, 400);
 });
 test('Übersetzen: Liste, Zählung, Zwischenspeicher, Grenzen', async () => {

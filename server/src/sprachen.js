@@ -8,6 +8,7 @@ export const SPRACHEN = {
   pl: { nativ: 'Polski', de: 'Polnisch', en: 'Polish', sr: 'pl-PL' },
   en: { nativ: 'English', de: 'Englisch', en: 'English', sr: 'en-GB' },
   el: { nativ: 'Ελληνικά', de: 'Griechisch', en: 'Greek', sr: 'el-GR' },
-  bg: { nativ: 'Български', de: 'Bulgarisch', en: 'Bulgarian', sr: 'bg-BG' }
+  bg: { nativ: 'Български', de: 'Bulgarisch', en: 'Bulgarian', sr: 'bg-BG' },
+  es: { nativ: 'Español', de: 'Spanisch', en: 'Spanish', sr: 'es-ES' }
 };
 export const sprache = s => (SPRACHEN[s] ? s : 'de');

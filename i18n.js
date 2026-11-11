@@ -13,9 +13,9 @@
   var ME = window.__ME || null, lang = 'de', ready = false;
   var LETTER = /[A-Za-zÀ-ɏͰ-ϿЀ-ӿ]/;
   var MSG = {
-    trans: { sq: 'Po përkthehet në gjermanisht …', ro: 'Se traduce în germană …', tr: 'Almancaya çevriliyor …', pl: 'Tłumaczenie na niemiecki …', en: 'Translating into German …', el: 'Μετάφραση στα γερμανικά …', bg: 'Превежда се на немски …' },
-    fail: { sq: 'Përkthimi nuk funksionoi. Teksti mbetet në gjuhën tuaj.', ro: 'Traducerea nu a reușit. Textul rămâne în limba ta.', tr: 'Çeviri yapılamadı. Metin kendi dilinizde kalıyor.', pl: 'Tłumaczenie nie powiodło się. Tekst pozostaje w Twoim języku.', en: 'Translation failed. Your text stays in your language.', el: 'Η μετάφραση απέτυχε. Το κείμενο παραμένει στη γλώσσα σας.', bg: 'Преводът не успя. Текстът остава на вашия език.' },
-    pick: 'Sprache wählen · Zgjidh gjuhën · Alege limba · Dilinizi seçin · Wybierz język · Choose your language · Επιλέξτε γλώσσα · Изберете език'
+    trans: { sq: 'Po përkthehet në gjermanisht …', ro: 'Se traduce în germană …', tr: 'Almancaya çevriliyor …', pl: 'Tłumaczenie na niemiecki …', en: 'Translating into German …', el: 'Μετάφραση στα γερμανικά …', bg: 'Превежда се на немски …', es: 'Traduciendo al alemán …' },
+    fail: { sq: 'Përkthimi nuk funksionoi. Teksti mbetet në gjuhën tuaj.', ro: 'Traducerea nu a reușit. Textul rămâne în limba ta.', tr: 'Çeviri yapılamadı. Metin kendi dilinizde kalıyor.', pl: 'Tłumaczenie nie powiodło się. Tekst pozostaje w Twoim języku.', en: 'Translation failed. Your text stays in your language.', el: 'Η μετάφραση απέτυχε. Το κείμενο παραμένει στη γλώσσα σας.', bg: 'Преводът не успя. Текстът остава на вашия език.', es: 'La traducción falló. Tu texto se queda en tu idioma.' },
+    pick: 'Sprache wählen · Zgjidh gjuhën · Alege limba · Dilinizi seçin · Wybierz język · Choose your language · Επιλέξτε γλώσσα · Изберете език · Elige tu idioma'
   };
 
   // ---------- Wörterbuch und Zwischenspeicher

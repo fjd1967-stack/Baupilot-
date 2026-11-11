@@ -47,7 +47,7 @@ async function t(name,fn){ try{ await fn(); }catch(e){ ok(name,false,String(e.me
 // Konto-Seite (Team mit Sprache je Mitarbeiter)
 { const {pg,errs}=await seite('tc'); await pg.goto('http://localhost:4125/app.html'); await pg.waitForTimeout(1500);
   await t('Team-Formular hat Sprachwahl',async()=>{ await pg.click('#t-team'); await pg.waitForTimeout(800);
-    const n=await pg.$$eval('#k-spr option',o=>o.length); ok('Sprachliste im Team-Formular', n===8, String(n));
+    const n=await pg.$$eval('#k-spr option',o=>o.length); ok('Sprachliste im Team-Formular', n===9, String(n));
     const tabs=await pg.$$eval('#tabs button',b=>b.map(x=>x.textContent.trim())); ok('Reiter polnisch', tabs.includes('Zespół')||tabs.includes('Profil'), JSON.stringify(tabs)); });
   ok('keine Konsolenfehler (Konto)', errs.length===0, errs.join(' | ')); }
 // Anmeldeseite ohne Konto: Sprachwahl per Knopf, Wörterbuch
