@@ -4,9 +4,27 @@
   'use strict';
   var ROLLE = { chef: false };
   // Angemeldeten Nutzer und Firmendaten sofort (synchron) laden, bevor die App startet.
-  function sync(p) { try { var x = new XMLHttpRequest(); x.open('GET', p, false); x.send(); if (x.status === 401) { location.replace('login.html'); return null; } return x.status === 200 ? JSON.parse(x.responseText) : null; } catch (e) { return null; } }
-  var ME = sync('/api/me') || { name: 'Gast', firma: '', rolle: 'mitglied', funktionen: [], variante: 'polier' };
-  var FD = sync('/api/firma') || {}, PR = sync('/api/profil') || {};
+  // Gibt es keinen Server (404/405/keine Antwort/keine JSON-Antwort, z. B. auf GitHub Pages), läuft die App im
+  // Probelauf-Modus: alle Daten bleiben im Browser dieses Geräts (IndexedDB), ohne Konto und ohne Server.
+  var KEIN_SERVER = false;
+  function sync(p) { try { var x = new XMLHttpRequest(); x.open('GET', p, false); x.send(); if (x.status === 401) { location.replace('login.html'); return null; } if (x.status === 200) { try { return JSON.parse(x.responseText); } catch (e) { KEIN_SERVER = true; return null; } } if (x.status === 404 || x.status === 405 || x.status === 0) KEIN_SERVER = true; return null; } catch (e) { KEIN_SERVER = true; return null; } }
+  var ME = sync('/api/me');
+  var LOKAL = !ME && KEIN_SERVER, PROFIL = null;
+  var ALLE = ['aufgaben', 'belege', 'information', 'arbeitseinteilung', 'fotos', 'bautagebuch', 'rapporte', 'aufmass', 'dokumente', 'lv', 'nachtraege', 'bauzeitenplan', 'anfragen', 'sicherung', 'teamuebersicht'];
+  if (LOKAL) {
+    try { PROFIL = JSON.parse(localStorage.getItem('bp_profil') || 'null'); } catch (e) { PROFIL = null; }
+    if (!PROFIL || !PROFIL.name) { // erst Daten eintragen (einmalig), dann zurück
+      location.replace('start.html');
+      window.__ME = { name: '', firma: '', rolle: 'chef', funktionen: [] }; window.__F = {};
+      window.claude = { use: function () { return new Promise(function () {}); } };
+      return;
+    }
+    ME = { name: PROFIL.name, firma: PROFIL.firma || '', rolle: 'chef', funktionen: ALLE, variante: 'bauleiter' };
+    try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
+    try { if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js'); } catch (e) {}
+  }
+  ME = ME || { name: 'Gast', firma: '', rolle: 'mitglied', funktionen: [], variante: 'polier' };
+  var FD = LOKAL ? PROFIL : (sync('/api/firma') || {}), PR = LOKAL ? { handy: PROFIL.tel, email: PROFIL.mail } : (sync('/api/profil') || {});
   ROLLE.chef = ME.rolle === 'chef';
   var F = { name: FD.name || ME.firma || '', strasse: FD.strasse || '', plz: FD.plz || '', ort: FD.ort || '', tel: FD.tel || '', fax: FD.fax || '', belegvorlage: FD.belegvorlage || '', belegkategorien: FD.belegkategorien, mail: FD.mail || '', web: FD.web || '' };
   window.__ME = ME; window.__F = F;
@@ -97,6 +115,77 @@
   };
 
   var user = { canEdit: function () { return Promise.resolve(ROLLE.chef); } };
+
+  // ---- Probelauf-Modus ohne Server: Daten und Dateien liegen im Browser dieses Geräts (IndexedDB)
+  if (LOKAL) {
+    var IDB = null, MEM = null;
+    var idb = function () { return IDB || (IDB = new Promise(function (ok, no) {
+      var r = indexedDB.open('bp-lokal', 1);
+      r.onupgradeneeded = function () { r.result.createObjectStore('dok', { keyPath: 'p' }); r.result.createObjectStore('assets', { keyPath: 'id' }); };
+      r.onsuccess = function () { ok(r.result); }; r.onerror = function () { no(r.error || new Error('Speicher nicht verfügbar')); };
+    })); };
+    var tx = function (store, mode, fn) { return idb().then(function (d) { return new Promise(function (ok, no) {
+      var t = d.transaction(store, mode), res = fn(t.objectStore(store));
+      t.oncomplete = function () { ok(res && 'result' in res ? res.result : res); };
+      t.onabort = t.onerror = function () { var e = t.error || new Error('Speichern fehlgeschlagen'); no(e.name === 'QuotaExceededError' ? new Error('Speicherplatz auf dem Gerät ist voll.') : e); };
+    }); }); };
+    var memLoad = function () { return MEM ? Promise.resolve(MEM) : tx('dok', 'readonly', function (s) { return s.getAll(); }).then(function (rows) { MEM = {}; rows.forEach(function (r) { (MEM[r.k] = MEM[r.k] || {})[r.id] = r.data; }); return MEM; }); };
+    var liste = function (m, koll) { var o = m[koll] || {}; return Object.keys(o).sort().map(function (id) { return { id: id, data: o[id] }; }); };
+    var lSpeichern = function (pfad, wert, mischen) {
+      var t = teil(pfad); if (!t[0] || wert === null || typeof wert !== 'object' || Array.isArray(wert)) return Promise.reject(new Error('Ungültiger Pfad oder Wert.'));
+      return memLoad().then(function (m) {
+        var alt = (m[t[0]] || {})[t[1]], neu = kopie(mischen && alt ? Object.assign({}, alt, wert) : wert);
+        return tx('dok', 'readwrite', function (s) { return s.put({ p: pfad, k: t[0], id: t[1], data: neu }); }).then(function () { (m[t[0]] = m[t[0]] || {})[t[1]] = neu; melde(t[0]); });
+      });
+    };
+    db = {
+      doc: function (pfad) {
+        var t = teil(pfad);
+        return {
+          id: t[1], path: pfad,
+          get: function () { return memLoad().then(function (m) { var d = (m[t[0]] || {})[t[1]]; return { exists: d !== undefined, id: t[1], data: function () { return kopie(d); } }; }); },
+          set: function (w) { return lSpeichern(pfad, w, false); },
+          update: function (w) { return lSpeichern(pfad, w, true); },
+          delete: function () { return memLoad().then(function (m) { return tx('dok', 'readwrite', function (s) { return s.delete(pfad); }).then(function () { if (m[t[0]]) delete m[t[0]][t[1]]; melde(t[0]); }); }); }
+        };
+      },
+      collection: function (koll) {
+        return {
+          path: koll,
+          doc: function (id) { return db.doc(koll + '/' + id); },
+          get: function () { return memLoad().then(function (m) { return snap(liste(m, koll)); }); },
+          onSnapshot: function (cb, err) {
+            var h = { zu: false };
+            h.pruefe = function () { if (h.zu) return; memLoad().then(function (m) { if (!h.zu) cb(snap(liste(m, koll))); }).catch(function (e) { if (!h.zu && err) err(e); }); };
+            (hoerer[koll] = hoerer[koll] || []).push(h); h.pruefe();
+            return function () { h.zu = true; hoerer[koll] = (hoerer[koll] || []).filter(function (x) { return x !== h; }); };
+          }
+        };
+      }
+    };
+    assets = {
+      upload: function (blob, opt) {
+        var id = Array.prototype.map.call(crypto.getRandomValues(new Uint8Array(16)), function (b) { return ('0' + b.toString(16)).slice(-2); }).join('');
+        return tx('assets', 'readwrite', function (s) { return s.put({ id: id, typ: (opt && opt.type) || blob.type || 'application/octet-stream', name: blob.name || '', groesse: blob.size, erstellt: Date.now(), blob: blob }); }).then(function () { return { id: id, groesse: blob.size }; });
+      },
+      delete: function (id) { return tx('assets', 'readwrite', function (s) { return s.delete(String(id)); }).then(function () { return { ok: true }; }); },
+      list: function () {
+        return tx('assets', 'readonly', function (s) { return s.getAll(); }).then(function (a) {
+          var bytes = a.reduce(function (n, x) { return n + (x.groesse || 0); }, 0);
+          var est = navigator.storage && navigator.storage.estimate ? navigator.storage.estimate().catch(function () { return {}; }) : Promise.resolve({});
+          return est.then(function (e) { return { assets: a.map(function (x) { return { id: x.id, typ: x.typ, name: x.name, groesse: x.groesse, erstellt: x.erstellt }; }), usage: { bytes: bytes, maxBytes: (e && e.quota) || 1073741824, files: a.length, maxFiles: 100000 } }; });
+        });
+      }
+    };
+    var nein = function (text) { return Promise.reject({ code: 'testversion', message: text }); };
+    mcp = {
+      listTools: function () { return Promise.resolve([]); },
+      callTool: function () { return nein('Direkt senden gibt es in der Testversion nicht. Bitte PDF speichern und per WhatsApp oder E-Mail selbst verschicken.'); }
+    };
+    sample = function () { return Promise.reject({ code: 'no_sample', message: 'Die automatische Übersetzung ist in der Testversion nicht freigeschaltet.' }); };
+    sample.json = sample;
+  }
+
   window.claude = { use: function (n) { return Promise.resolve({ db: db, assets: assets, mcp: mcp, permissions: permissions, downloads: downloads, sample: sample, user: user }[n] || null); } };
   window.BAU_ROLLE = ROLLE;
 })();

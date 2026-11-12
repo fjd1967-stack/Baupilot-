@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>BauPilot – Probelauf</title>
+<meta name="robots" content="noindex">
+<link rel="manifest" href="bau.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="theme-color" content="#ff5a14">
+<style>
+  :root { --o: #ff5a14; --t: #1b1b1b; --g: #6b6b6b; --r: #e4e4e4; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 18px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: var(--t); background: #f6f6f4; padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom); }
+  .wrap { max-width: 560px; margin: 0 auto; padding: 22px 18px 60px; }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 26px; letter-spacing: -.5px; }
+  .logo i { width: 30px; height: 30px; border-radius: 8px; background: var(--o); display: inline-block; }
+  h1 { font-size: 28px; line-height: 1.15; margin: 22px 0 6px; }
+  .lead { color: var(--g); margin: 0 0 18px; }
+  .karte { background: #fff; border: 1px solid var(--r); border-radius: 16px; padding: 18px; margin: 0 0 16px; }
+  .schritt { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 20px; margin: 0 0 12px; }
+  .schritt b { width: 30px; height: 30px; border-radius: 50%; background: var(--o); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 17px; flex: none; }
+  label { display: block; font-size: 15px; font-weight: 600; margin: 12px 0 4px; }
+  input { width: 100%; font: inherit; padding: 13px 12px; border: 1.5px solid #cfcfcf; border-radius: 10px; background: #fff; }
+  input:focus { outline: 3px solid #ffd2bd; border-color: var(--o); }
+  .zeile { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; }
+  button.gross, a.gross { display: block; width: 100%; margin-top: 18px; padding: 16px; font: inherit; font-weight: 800; font-size: 20px; color: #fff; background: var(--o); border: 0; border-radius: 12px; text-align: center; text-decoration: none; cursor: pointer; }
+  button.gross:active, a.gross:active { transform: scale(.99); }
+  .fehler { color: #b00020; font-size: 15px; margin: 8px 0 0; min-height: 1.2em; }
+  ol { padding-left: 22px; margin: 6px 0 0; }
+  li { margin: 7px 0; }
+  .klein { font-size: 15px; color: var(--g); }
+  .hinweis { background: #fff6e8; border: 1px solid #ffd9a3; border-radius: 12px; padding: 12px 14px; font-size: 15px; margin-top: 14px; }
+  .geraet { display: none; }
+  .geraet.an { display: block; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 8px; }
+  .tabs button { font: inherit; font-size: 15px; font-weight: 600; padding: 8px 12px; border-radius: 999px; border: 1.5px solid #cfcfcf; background: #fff; cursor: pointer; }
+  .tabs button[aria-pressed="true"] { background: var(--t); color: #fff; border-color: var(--t); }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo"><i></i>BauPilot</div>
+
+  <section id="neu">
+    <h1>Probelauf: Baustellen-App</h1>
+    <p class="lead">In zwei Schritten startklar. Keine Anmeldung, kein Passwort, kein Download aus dem App Store.</p>
+
+    <div class="karte">
+      <div class="schritt"><b>1</b> Deine Daten (nur einmal)</div>
+      <form id="f" autocomplete="on" novalidate>
+        <label for="name">Dein Name</label>
+        <input id="name" autocomplete="name" placeholder="Vor- und Nachname">
+        <label for="firma">Firma</label>
+        <input id="firma" autocomplete="organization" placeholder="Name der Firma">
+        <label for="strasse">Straße und Nr. <span class="klein">(für Briefkopf, kann leer bleiben)</span></label>
+        <input id="strasse" autocomplete="street-address">
+        <div class="zeile">
+          <div><label for="plz">PLZ</label><input id="plz" autocomplete="postal-code" inputmode="numeric"></div>
+          <div><label for="ort">Ort</label><input id="ort" autocomplete="address-level2"></div>
+        </div>
+        <label for="tel">Handynummer <span class="klein">(für Rückfragen)</span></label>
+        <input id="tel" type="tel" autocomplete="tel">
+        <label for="mail">E-Mail</label>
+        <input id="mail" type="email" autocomplete="email">
+        <p class="fehler" id="fehler" role="alert"></p>
+        <button class="gross" type="submit" id="los">BauPilot starten</button>
+      </form>
+    </div>
+  </section>
+
+  <section id="da" hidden>
+    <h1>Willkommen zurück</h1>
+    <p class="lead" id="wer"></p>
+    <a class="gross" href="bau.html" style="margin-top:0">BauPilot öffnen</a>
+    <p class="klein" style="margin-top:14px"><a href="#" id="aendern">Meine Daten ändern</a></p>
+  </section>
+
+  <div class="karte" id="inst">
+    <div class="schritt"><b id="n2">2</b> Auf dem Gerät ablegen</div>
+    <p class="klein" style="margin:0 0 10px">Damit BauPilot wie eine normale App startet (und die Daten sicher auf dem Gerät bleiben):</p>
+    <div class="tabs" id="tabs">
+      <button type="button" data-g="ios" aria-pressed="false">iPad / iPhone</button>
+      <button type="button" data-g="mac" aria-pressed="false">Mac (Safari)</button>
+      <button type="button" data-g="chrome" aria-pressed="false">Mac / Windows (Chrome, Edge)</button>
+      <button type="button" data-g="android" aria-pressed="false">Android</button>
+    </div>
+    <div class="geraet" id="g-ios"><ol>
+      <li>Diese Seite in <b>Safari</b> öffnen (nicht in WhatsApp oder Mail).</li>
+      <li>Unten bzw. oben auf das Symbol <b>Teilen</b> (Quadrat mit Pfeil) tippen.</li>
+      <li><b>Zum Home-Bildschirm</b> wählen, dann <b>Hinzufügen</b>.</li></ol></div>
+    <div class="geraet" id="g-mac"><ol>
+      <li>In Safari oben in der Menüleiste auf <b>Ablage</b> klicken.</li>
+      <li><b>Zum Dock hinzufügen</b> wählen, dann <b>Hinzufügen</b>.</li></ol></div>
+    <div class="geraet" id="g-chrome"><ol>
+      <li>Rechts in der Adresszeile auf das Symbol <b>Installieren</b> (Monitor mit Pfeil) klicken.</li>
+      <li><b>Installieren</b> bestätigen. Fertig, BauPilot liegt im Programmordner/Dock.</li></ol></div>
+    <div class="geraet" id="g-android"><ol>
+      <li>In Chrome oben rechts auf die <b>drei Punkte</b> tippen.</li>
+      <li><b>App installieren</b> bzw. <b>Zum Startbildschirm hinzufügen</b> wählen.</li></ol></div>
+    <div class="hinweis"><b>Wichtig:</b> Die Daten bleiben nur auf diesem Gerät. Bitte in der App unter Einstellungen gelegentlich die <b>Datensicherung (ZIP)</b> machen. Direkt per E-Mail senden und die automatische Übersetzung gibt es in der Testversion noch nicht; PDF speichern und per WhatsApp verschicken geht.</div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var $ = function (i) { return document.getElementById(i); };
+  var KEYS = ['name', 'firma', 'strasse', 'plz', 'ort', 'tel', 'mail'];
+  var p = null;
+  try { p = JSON.parse(localStorage.getItem('bp_profil') || 'null'); } catch (e) {}
+  var aendern = /[?&]aendern/.test(location.search);
+
+  function zeige() {
+    var da = p && p.name && !aendern;
+    $('neu').hidden = !!da; $('da').hidden = !da;
+    $('n2').textContent = da ? '✓' : '2';
+    if (da) $('wer').textContent = p.name + (p.firma ? ' · ' + p.firma : '');
+    if (p) KEYS.forEach(function (k) { if (p[k]) $(k).value = p[k]; });
+  }
+  zeige();
+  $('aendern').addEventListener('click', function (e) { e.preventDefault(); aendern = true; zeige(); });
+
+  // Anleitung passend zum Gerät vorwählen
+  var ua = navigator.userAgent || '', touchMac = /Macintosh/.test(ua) && navigator.maxTouchPoints > 1;
+  var g = (/iPad|iPhone|iPod/.test(ua) || touchMac) ? 'ios' : /Android/.test(ua) ? 'android' : /Macintosh/.test(ua) ? ((/Chrome|Edg\//.test(ua)) ? 'chrome' : 'mac') : 'chrome';
+  function waehle(x) {
+    ['ios', 'mac', 'chrome', 'android'].forEach(function (k) { $('g-' + k).classList.toggle('an', k === x); });
+    [].forEach.call($('tabs').children, function (b) { b.setAttribute('aria-pressed', b.dataset.g === x ? 'true' : 'false'); });
+  }
+  waehle(g);
+  $('tabs').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) waehle(b.dataset.g); });
+
+  // Offline-Fähigkeit vorbereiten, bevor es losgeht
+  var swBereit = ('serviceWorker' in navigator) ? navigator.serviceWorker.register('sw.js').then(function () { return navigator.serviceWorker.ready; }).catch(function () {}) : Promise.resolve();
+
+  $('f').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var o = {}; KEYS.forEach(function (k) { o[k] = $(k).value.trim(); });
+    if (o.name.length < 3) { $('fehler').textContent = 'Bitte Vor- und Nachname eintragen.'; $('name').focus(); return; }
+    if (!o.firma) { $('fehler').textContent = 'Bitte die Firma eintragen.'; $('firma').focus(); return; }
+    try { localStorage.setItem('bp_profil', JSON.stringify(o)); } catch (x) { $('fehler').textContent = 'Dieses Gerät erlaubt kein Speichern (privater Modus?). Bitte normal in Safari/Chrome öffnen.'; return; }
+    $('los').disabled = true; $('los').textContent = 'Einen Moment …';
+    Promise.race([swBereit, new Promise(function (r) { setTimeout(r, 2500); })]).then(function () { location.href = 'bau.html'; });
+  });
+})();
+</script>
+</body>
+</html>

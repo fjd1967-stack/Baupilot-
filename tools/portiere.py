@@ -60,6 +60,11 @@ gate();new MutationObserver(gate).observe(document.getElementById('rubs')||docum
 var h=document.querySelector('.brand');if(h&&window.__ME){var s=document.createElement('small');s.textContent=__ME.firma+' · '+__ME.name;h.appendChild(s)}})();</script>
 """
 ers('<main class="wrap" id="main"></main>', gate + '<main class="wrap" id="main"></main>', 'gate', soll=1)
+# Dateien relativ ausliefern (_blob/<id> statt /_blob/<id>): geht auf dem Server wie bisher und auch unter einem Unterpfad
+# (GitHub Pages) im Probelauf ohne Server, wo der Service Worker die Dateien aus dem Gerätespeicher liefert
+ers('/_blob/', '_blob/', 'blobpfad', soll=1)
+# Installierbar (Home-Bildschirm / Dock) mit eigener Startadresse bau.html
+ers('<head>', '<head><link rel="manifest" href="bau.webmanifest"><link rel="apple-touch-icon" href="icons/icon-192.png"><meta name="theme-color" content="#ff5a14"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="BauPilot">', 'kopf', soll=1)
 if LOKAL:  # Bibliotheken vom eigenen Server statt von CDNs (nach tools/vendor.sh)
     for a, b in [('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/', '/lib/pdfjs/'), ('https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.0.5/tesseract.min.js', '/lib/tesseract/tesseract.min.js'),
                  ('https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js', '/lib/qrcode.min.js'), ('https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js', '/lib/pdf-lib.min.js'),

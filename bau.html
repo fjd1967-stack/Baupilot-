@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><link rel="manifest" href="bau.webmanifest"><link rel="apple-touch-icon" href="icons/icon-192.png"><meta name="theme-color" content="#ff5a14"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="BauPilot"><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <script src="claude-shim.js"></script>
 <script src="bau-ext.js"></script>
 <script src="sprachen.js"></script><script src="woerter.js"></script><script src="i18n.js"></script>
@@ -344,7 +344,7 @@ async function loadPdfJs(){
   const lib=window.pdfjsLib; try{const w=await(await fetch(base+'pdf.worker.min.js')).text();lib.GlobalWorkerOptions.workerSrc=URL.createObjectURL(new Blob([w],{type:'text/javascript'}));}catch(e){lib.GlobalWorkerOptions.workerSrc=base+'pdf.worker.min.js';}
   pdfLib=lib; return lib;
 }
-const getPdf=t=>pdfDocs[t.id]||(pdfDocs[t.id]=loadPdfJs().then(l=>l.getDocument({url:'/_blob/'+t.id}).promise));
+const getPdf=t=>pdfDocs[t.id]||(pdfDocs[t.id]=loadPdfJs().then(l=>l.getDocument({url:'_blob/'+t.id}).promise));
 async function renderPage(el){
   if(el.dataset.r) return; el.dataset.r='1';
   try{
@@ -589,7 +589,7 @@ function detailHtml(){
     ${f('datum','Datum','','date')}${f('betreff','Betreff','')}${f('von','Von','Absender')}${f('an','An','Empfänger (auch Cc)')}
     <label for="sv_text">Text / Inhalt</label><textarea id="sv_text" data-k="text" placeholder="E-Mail-Text hier einfügen …">${esc(x.text||'')}</textarea>
     <label for="sv_notiz">Notiz (intern)</label><textarea id="sv_notiz" data-k="notiz" style="min-height:70px">${esc(x.notiz||'')}</textarea></div>
-  <div class="sec"><h2>Anhänge</h2>${(x.dateien||[]).map((a,i)=>`<div class="svatt"><a href="/_blob/${esc(a.id)}" target="_blank" rel="noopener">📎 ${esc(a.name)}</a><button type="button" data-rm="${i}" aria-label="Anhang entfernen">×</button></div>`).join('')||'<p class="hint" style="margin:0 0 6px">Keine Anhänge.</p>'}
+  <div class="sec"><h2>Anhänge</h2>${(x.dateien||[]).map((a,i)=>`<div class="svatt"><a href="_blob/${esc(a.id)}" target="_blank" rel="noopener">📎 ${esc(a.name)}</a><button type="button" data-rm="${i}" aria-label="Anhang entfernen">×</button></div>`).join('')||'<p class="hint" style="margin:0 0 6px">Keine Anhänge.</p>'}
     <div class="svbar"><label class="btn" for="svAtt" style="cursor:pointer">📁 Datei anhängen</label><input type="file" id="svAtt" multiple style="position:fixed;left:0;top:0;width:1px;height:1px;opacity:0;pointer-events:none" tabindex="-1" aria-hidden="true"></div><div id="svMsg">${esc(msg)}</div></div>
   <div class="sec"><button class="btn danger" type="button" id="svDel">Eintrag löschen</button></div></div>`;
 }
@@ -862,7 +862,7 @@ document.addEventListener('click',async ev=>{
     if(!confirm('Vergleich jetzt an '+to+' senden?')) return;
     t.disabled=true; const wantPdf=!!($('#vPdf')&&$('#vPdf').checked); x.pdfAnhang=wantPdf;
     try{ let atts=[]; if(wantPdf){ const d=vBuildPdf(x); const u=new Uint8Array(d.output('arraybuffer')); let s=''; for(let i=0;i<u.length;i+=8192) s+=String.fromCharCode.apply(null,u.subarray(i,i+8192)); atts=[{content:btoa(s),filename:vfname(x),mimeType:'application/pdf'}]; }
-      if(x.angAnhang&&(x.angebote||[]).length){ setMsg('Angebote werden geladen …'); let tot=0; for(const a of x.angebote){ const r=await fetch('/_blob/'+a.id).catch(()=>({ok:false})); if(!r.ok) throw {code:'blob',message:'Angebot nicht ladbar: '+a.name}; const bl=await r.blob(); tot+=bl.size; if(tot>18*1024*1024) throw {code:'zu_gross',message:'Anhänge über 18 MB, bitte weniger Angebote oder zwei Mails'}; const u=new Uint8Array(await bl.arrayBuffer()); let s=''; for(let i=0;i<u.length;i+=8192) s+=String.fromCharCode.apply(null,u.subarray(i,i+8192)); atts.push({content:btoa(s),filename:(a.firma?a.firma.replace(/[^\wÄÖÜäöüß\- ]+/g,'')+' - ':'')+a.name,mimeType:bl.type||a.type||'application/pdf'}); } }
+      if(x.angAnhang&&(x.angebote||[]).length){ setMsg('Angebote werden geladen …'); let tot=0; for(const a of x.angebote){ const r=await fetch('_blob/'+a.id).catch(()=>({ok:false})); if(!r.ok) throw {code:'blob',message:'Angebot nicht ladbar: '+a.name}; const bl=await r.blob(); tot+=bl.size; if(tot>18*1024*1024) throw {code:'zu_gross',message:'Anhänge über 18 MB, bitte weniger Angebote oder zwei Mails'}; const u=new Uint8Array(await bl.arrayBuffer()); let s=''; for(let i=0;i<u.length;i+=8192) s+=String.fromCharCode.apply(null,u.subarray(i,i+8192)); atts.push({content:btoa(s),filename:(a.firma?a.firma.replace(/[^\wÄÖÜäöüß\- ]+/g,'')+' - ':'')+a.name,mimeType:bl.type||a.type||'application/pdf'}); } }
       await gmailSend(to,x.betreff||x.titel,vMailText(x),atts,setMsg,vMailHtml(x));
       x.status='gesendet'; x.gesendetAm=new Date().toISOString().slice(0,10); vsave(cur); setMsg('✓ Vergleich wurde gesendet.');
     }catch(e){ const c=e&&e.code; setMsg(c==='blob'||c==='zu_gross'?'Nicht gesendet: '+e.message:c==='no_mcp'||c==='not_granted'?'Direktversand ist hier nicht verfügbar – bitte „PDF speichern“ nutzen und manuell versenden.':c==='server_not_connected'?'Gmail ist nicht verbunden (claude.ai → Konnektoren).':c==='approval_required'||c==='declined'?'Senden wurde nicht freigegeben.':'Senden nicht bestätigt – bitte im Gmail-Ordner „Gesendet“ prüfen, bevor erneut gesendet wird. ('+[c,e&&e.message].filter(Boolean).join(': ').slice(0,160)+')'); }
@@ -1813,7 +1813,7 @@ async function restoreData(all, zip, msg){
       for(const [k,v] of Object.entries(o)){
         if((k==='photos'||k==='fotos'||k==='dateien') && Array.isArray(v)){
           for(const x of v){ if(!x || !x.datei) continue; const zf = zip && zip.file(x.datei);
-            if(zf && x.id && !x.data){ let ok = false; try{ ok = (await fetch('/_blob/'+x.id)).ok; }catch(e){}
+            if(zf && x.id && !x.data){ let ok = false; try{ ok = (await fetch('_blob/'+x.id)).ok; }catch(e){}
               if(!ok && ass){ try{ const bytes = await zf.async('uint8array'); const pdf = bytes[0]===0x25 && bytes[1]===0x50; const blob = new Blob([bytes], {type: pdf?'application/pdf':'image/jpeg'}); const r = await ass.upload(blob, {type: blob.type}); if(r && r.id){ x.id = r.id; if(r.url) x.url = r.url; nUp++; } }catch(e){ console.error(e); nMiss++; } }
               else if(!ok) nMiss++; }
             delete x.datei; }
@@ -1921,7 +1921,7 @@ document.addEventListener('click', async ev=>{
   if(t.id==='projClose') return closeProject();
   if(t.dataset.autorest){
     if(needAdmin()) return;
-    try{ restMsg('Lade Sicherung …'); const r = await fetch('/_blob/'+(await db.doc('sicherungen/'+t.dataset.autorest).get()).data().assetId); if(!r.ok) throw new Error('Datei nicht ladbar'); await restoreData(await r.json(), null, restMsg); }catch(e){ console.error(e); restMsg('Fehlgeschlagen: '+(e?.message||'Fehler')); }
+    try{ restMsg('Lade Sicherung …'); const r = await fetch('_blob/'+(await db.doc('sicherungen/'+t.dataset.autorest).get()).data().assetId); if(!r.ok) throw new Error('Datei nicht ladbar'); await restoreData(await r.json(), null, restMsg); }catch(e){ console.error(e); restMsg('Fehlgeschlagen: '+(e?.message||'Fehler')); }
     return;
   }
   if(t.dataset.archreact){ const id = t.dataset.archreact, p = archProjects.get(id); if(!p) return; try{ await store.setProject(id, Object.assign({}, cl(p), {archiviert:false})); archProjects.delete(id); toast('Baustelle wieder aktiv', 3000); }catch(e){ toast('Fehlgeschlagen'); } return setTimeout(()=>{ if(tab==='baustelle') renderSettings(); }, 600); }
@@ -1994,7 +1994,7 @@ async function exportAll(only){
     for(const [k,v] of Object.entries(o)){
       if((k==='photos'||k==='fotos'||k==='dateien') && Array.isArray(v)){
         for(const x of v){
-          if(x && x.id && !x.data){ try{ const r = await fetch('/_blob/'+x.id); if(!r.ok) throw 0; zip.file(`bilder/${tag}_${x.id}.jpg`, await r.blob()); x.datei = `bilder/${tag}_${x.id}.jpg`; nPh++; }catch(e){ nFail++; } }
+          if(x && x.id && !x.data){ try{ const r = await fetch('_blob/'+x.id); if(!r.ok) throw 0; zip.file(`bilder/${tag}_${x.id}.jpg`, await r.blob()); x.datei = `bilder/${tag}_${x.id}.jpg`; nPh++; }catch(e){ nFail++; } }
         }
       } else await walk(v, tag);
     }
@@ -2298,7 +2298,7 @@ function dictApply(){
   closePanel();
 }
 const photoData = new Map();
-const photoSrc = p => p.data ? p.data : p.id ? '/_blob/'+p.id : (photoData.get(p.fid) || '');
+const photoSrc = p => p.data ? p.data : p.id ? '_blob/'+p.id : (photoData.get(p.fid) || '');
 async function loadPhotoData(p, pid=activeId){
   if(!p.fid) return null;
   if(photoData.has(p.fid)) return photoData.get(p.fid);
@@ -2603,7 +2603,7 @@ async function drawDay(doc, key){
     doc.setFont('helvetica','bold'); doc.setFontSize(12); doc.text(`Fotos – ${e.nr?'Nr. '+e.nr+', ':''}${fmtDate(key)}`, L, y); y += 8;
     let col = 0, rowH = 0; const cw = 91;
     for(const p of ph){
-      let im; try{ im = p.fid ? await imgDataUrl(await loadPhotoData(p)) : await imgData('/_blob/'+p.id); }catch(err){ continue; }
+      let im; try{ im = p.fid ? await imgDataUrl(await loadPhotoData(p)) : await imgData('_blob/'+p.id); }catch(err){ continue; }
       if(pdfSmall){ try{ im = await shrinkIm(im, pdfSmall.max, pdfSmall.q); }catch(_){} }
       const sc = Math.min(cw/im.w, 80/im.h), w = im.w*sc, h = im.h*sc;
       if(col===0) need(h+4);
@@ -2733,7 +2733,7 @@ function dkListen(pid){
 }
 function dkSave(d){ dk.set(d.id, d); if(db && dkPid) db.doc(`projekte/${dkPid}/dokumente/${d.id}`).set(d).catch(e=>{ console.error(e); toast('Speichern fehlgeschlagen'); }); }
 function dkDel(id){ const d = dk.get(id); dk.delete(id); if(db && dkPid) bpDel(db, `projekte/${dkPid}/dokumente/${id}`).catch(e=>{ console.error(e); toast('Löschen fehlgeschlagen'); }); }
-const dkSrc = x => x.data ? x.data : x.id ? '/_blob/'+x.id : '';
+const dkSrc = x => x.data ? x.data : x.id ? '_blob/'+x.id : '';
 /* Große PDFs (über ca. 19 MB) automatisch in Teile unter 20 MB zerlegen; alle Teile außer dem letzten werden direkt ans Dokument gehängt, der letzte wird zurückgegeben. */
 async function dkSplitPdf(f, d){
   if(!window.PDFLib) throw new Error('PDF-Modul zum Zerlegen nicht geladen');
@@ -4257,7 +4257,7 @@ async function drawProt(doc, id){
     else { doc.addPage(); y = 14; doc.setFont('helvetica','bold'); doc.setFontSize(12); doc.text(`Fotos – ${T.title}, ${p.datum?fmtDate(p.datum):''}`, L, y); y += 8; }
     let col = 0, rowH = 0; const cw = 91;
     for(const x of ph){
-      let im; try{ im = x.fid ? await imgDataUrl(await loadPhotoData(x)) : await imgData('/_blob/'+x.id); }catch(err){ continue; }
+      let im; try{ im = x.fid ? await imgDataUrl(await loadPhotoData(x)) : await imgData('_blob/'+x.id); }catch(err){ continue; }
       if(pdfSmall){ try{ im = await shrinkIm(im, pdfSmall.max, pdfSmall.q); }catch(_){} }
       const sc = Math.min(cw/im.w, 80/im.h), w = im.w*sc, h = im.h*sc;
       if(col===0) need(h+4);
@@ -4875,7 +4875,7 @@ async function drawBelege(doc){
       need(14); doc.setFont('helvetica','bold'); doc.text(`Beleg Nr. ${b.nr||''} – ${b.datum?fmtDate(b.datum):''} – ${fmtEur(parseEur(b.betrag))}`, L, y); y += 5;
       let col = 0, rowH = 0;
       for(const x of b.photos){
-        let im; try{ im = x.fid ? await imgDataUrl(await loadPhotoData(x)) : await imgData('/_blob/'+x.id); }catch(err){ continue; }
+        let im; try{ im = x.fid ? await imgDataUrl(await loadPhotoData(x)) : await imgData('_blob/'+x.id); }catch(err){ continue; }
         if(pdfSmall){ try{ im = await shrinkIm(im, pdfSmall.max, pdfSmall.q); }catch(_){} }
         const sc = Math.min(cw/im.w, 110/im.h), w = im.w*sc, h = im.h*sc;
         if(col===0) need(h+4);
@@ -5461,7 +5461,7 @@ async function drawTodo(doc, id){
     need(20); doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.text('Bilder zum Ort', L, y); y += 6;
     let col = 0, rowH = 0; const cw = 91;
     for(const x of ph){
-      let im; try{ im = x.data ? await imgDataUrl(x.data) : x.fid ? await imgDataUrl(await loadPhotoData(x)) : await imgData('/_blob/'+x.id); }catch(err){ continue; }
+      let im; try{ im = x.data ? await imgDataUrl(x.data) : x.fid ? await imgDataUrl(await loadPhotoData(x)) : await imgData('_blob/'+x.id); }catch(err){ continue; }
       if(pdfSmall){ try{ im = await shrinkIm(im, pdfSmall.max, pdfSmall.q); }catch(_){} }
       const sc = Math.min(cw/im.w, 80/im.h), w = im.w*sc, h = im.h*sc;
       if(col===0) need(h+4);
@@ -5646,7 +5646,7 @@ async function drawAe(doc, id){
       y += 2; need(20); doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.text('Bilder', L+1, y); y += 4;
       let col = 0, rowH = 0; const cw = 91;
       for(const x of gph){
-        let im; try{ im = x.data ? await imgDataUrl(x.data) : x.fid ? await imgDataUrl(await loadPhotoData(x)) : await imgData('/_blob/'+x.id); }catch(err){ continue; }
+        let im; try{ im = x.data ? await imgDataUrl(x.data) : x.fid ? await imgDataUrl(await loadPhotoData(x)) : await imgData('_blob/'+x.id); }catch(err){ continue; }
         if(pdfSmall){ try{ im = await shrinkIm(im, pdfSmall.max, pdfSmall.q); }catch(_){} }
         const sc = Math.min(cw/im.w, 80/im.h), w = im.w*sc, h = im.h*sc;
         if(col===0) need(h+4);
@@ -6077,7 +6077,7 @@ async function drawOrder(doc, id){
     need(20); doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.text('Bilder zum Ort', L, y); y += 6;
     let col = 0, rowH = 0; const cw = 91;
     for(const x of ph){
-      let im; try{ im = x.data ? await imgDataUrl(x.data) : x.fid ? await imgDataUrl(await loadPhotoData(x)) : await imgData('/_blob/'+x.id); }catch(err){ continue; }
+      let im; try{ im = x.data ? await imgDataUrl(x.data) : x.fid ? await imgDataUrl(await loadPhotoData(x)) : await imgData('_blob/'+x.id); }catch(err){ continue; }
       if(pdfSmall){ try{ im = await shrinkIm(im, pdfSmall.max, pdfSmall.q); }catch(_){} }
       const sc = Math.min(cw/im.w, 80/im.h), w = im.w*sc, h = im.h*sc;
       if(col===0) need(h+4);
@@ -6331,7 +6331,7 @@ async function drawInfo(doc, id){
     need(20); doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.text('Bilder zum Ort', L, y); y += 6;
     let col = 0, rowH = 0; const cw = 91;
     for(const x of ph){
-      let im; try{ im = x.data ? await imgDataUrl(x.data) : x.fid ? await imgDataUrl(await loadPhotoData(x)) : await imgData('/_blob/'+x.id); }catch(err){ continue; }
+      let im; try{ im = x.data ? await imgDataUrl(x.data) : x.fid ? await imgDataUrl(await loadPhotoData(x)) : await imgData('_blob/'+x.id); }catch(err){ continue; }
       if(pdfSmall){ try{ im = await shrinkIm(im, pdfSmall.max, pdfSmall.q); }catch(_){} }
       const sc = Math.min(cw/im.w, 80/im.h), w = im.w*sc, h = im.h*sc;
       if(col===0) need(h+4);
